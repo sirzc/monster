@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.yunli</groupId>
+    <artifactId>monster</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0.0</version>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.0.1.RELEASE</version>
+    </parent>
+
+    <modules>
+        <module>monster-core</module>
+        <module>monster-utils</module>
+        <module>monster-web</module>
+        <module>monster-log</module>
+        <module>monster-other</module>
+    </modules>
+
+    <properties>
+        <monster.version>${project.version}</monster.version>
+        <spring-boot.version>${parent.version}</spring-boot.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.version>1.8</java.version>
+        <junit.version>4.11</junit.version>
+
+        <mybatis-plus-boot-starter.version>3.0.6</mybatis-plus-boot-starter.version>
+        <druid-spring-boot-starter.version>1.1.9</druid-spring-boot-starter.version>
+        <mysql.verson>5.1.46</mysql.verson>
+        <slf4j-api.version>1.7.25</slf4j-api.version>
+        <logback.version>1.2.3</logback.version>
+        <velocity.version>1.7</velocity.version>
+        <rocketmq.version>4.2.0</rocketmq.version>
+    </properties>
+
+    <!-- 对子模块依赖进行管理 -->
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.yunli</groupId>
+                <artifactId>monster-core</artifactId>
+                <version>${monster.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.yunli</groupId>
+                <artifactId>monster-utils</artifactId>
+                <version>${monster.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.yunli</groupId>
+                <artifactId>monster-test</artifactId>
+                <version>${monster.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.yunli</groupId>
+                <artifactId>monster-web</artifactId>
+                <version>${monster.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.yunli</groupId>
+                <artifactId>monster-log</artifactId>
+                <version>${monster.version}</version>
+            </dependency>
+            <!-- 单元测试 -->
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <!-- 代码生成器模板 -->
+            <dependency>
+                <groupId>org.apache.velocity</groupId>
+                <artifactId>velocity</artifactId>
+                <version>${velocity.version}</version>
+            </dependency>
+            <!-- ***************************** 数据相关配置 start ************************** -->
+            <!-- mysql 数据库驱动 -->
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>${mysql.verson}</version>
+            </dependency>
+            <!-- mybatis plus 配置 -->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <version>${mybatis-plus-boot-starter.version}</version>
+            </dependency>
+            <!-- druid 数据库连接池 -->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid-spring-boot-starter</artifactId>
+                <version>${druid-spring-boot-starter.version}</version>
+            </dependency>
+
+            <!-- 日志依赖 -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-core</artifactId>
+                <version>${logback.version}</version>
+            </dependency>
+            <!-- rocket mq -->
+            <dependency>
+                <groupId>org.apache.rocketmq</groupId>
+                <artifactId>rocketmq-client</artifactId>
+                <version>${rocketmq.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.rocketmq</groupId>
+                <artifactId>rocketmq-example</artifactId>
+                <version>${rocketmq.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.rocketmq</groupId>
+                <artifactId>rocketmq-tools</artifactId>
+                <version>${rocketmq.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+</project>

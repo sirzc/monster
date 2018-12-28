@@ -1,0 +1,60 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+#spring 相关配置
+spring:
+  profiles:
+    ### local：本地环境，test:测试环境，produce：生产环境
+    active: local
+  mvc:
+    static-path-pattern: /static/**
+    view:
+      prefix: /WEB-INF/
+  devtools:
+    restart:
+      ### 热部署生效
+      enabled: true
+      ### 忽略的目录
+      exclude: static/**,WEB-INF/**
+      ### 重启的目录
+      #additional-paths: src/main/java
+
+# mybatis
+mybatis-plus:
+  type-aliases-package: com.yunli.monster.modular.*.model
+  mapper-locations: classpath*:com/yunli/monster/modular/**/dao/mapper/*.xml
+  ## mybatis全局配置，可以在mapper.xml中直接使用${table-prefix}获取 
+  configuration-properties:
+    ### 表前缀
+    table-prefix: UNITOP_JOB_QRTZ_
+
+#################################【环境设置】###############################
+###本地环境
+---
+spring:
+  profiles: local
+  datasource:
+    url: jdbc:mysql://localhost:3306/unitop-job?useUnicode=true&characterEncoding=UTF-8
+    username: root
+    password: 123456
+    filters: wall,mergeStat
+    
+###测试环境
+---
+spring:
+  profiles: test
+  datasource:
+    url: jdbc:mysql://10.1.5.61:3306/unitop-job?useUnicode=true&characterEncoding=UTF-8
+    username: test
+    password: test
+
+###生产环境    
+---
+spring:
+  profiles: produce
+  datasource:
+    url: 
+    username: 
+    password: 
