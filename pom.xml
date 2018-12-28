@@ -38,6 +38,8 @@
         <logback.version>1.2.3</logback.version>
         <velocity.version>1.7</velocity.version>
         <rocketmq.version>4.2.0</rocketmq.version>
+
+        <hutool.version>4.3.2</hutool.version>
     </properties>
 
     <!-- 对子模块依赖进行管理 -->
@@ -101,7 +103,6 @@
                 <artifactId>druid-spring-boot-starter</artifactId>
                 <version>${druid-spring-boot-starter.version}</version>
             </dependency>
-
             <!-- 日志依赖 -->
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -133,6 +134,12 @@
                 <groupId>org.apache.rocketmq</groupId>
                 <artifactId>rocketmq-tools</artifactId>
                 <version>${rocketmq.version}</version>
+            </dependency>
+            <!-- 工具包 -->
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-core</artifactId>
+                <version>${hutool.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

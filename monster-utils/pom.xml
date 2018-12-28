@@ -14,9 +14,14 @@
 
 
     <dependencies>
+        <!-- 工具包 -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-core</artifactId>
         </dependency>
     </dependencies>
 
