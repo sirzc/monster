@@ -48,6 +48,11 @@ public class Customer implements Back {
         System.err.println("预约成功");
     }
 
+    /**
+     * 回调的思想
+     * 类A的a()方法调用类B的b()方法
+     * 类B的b()方法执行完毕主动调用类A的callback()方法
+     */
     public static void main(String[] args) {
         // 新建一个用户
         Customer customer = new Customer();
@@ -56,6 +61,10 @@ public class Customer implements Back {
         customer.setName("23");
         // 用户预约这个酒店,预约是否成功，返回给用户
         customer.reserve();
-
+        System.err.println("======================");
+        customer.getHotel().reservationService(customer);
+        System.err.println("======================");
+        Hotel hotel = new Hotel();
+        hotel.reservationService(customer);
     }
 }

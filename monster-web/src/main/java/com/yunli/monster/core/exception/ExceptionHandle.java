@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -70,21 +69,21 @@ public class ExceptionHandle {
      * 这个是正式项目完成之后的错误统一处理(开发情况先用上面的的)
      * 我们在开发过程中还是用json格式的会好一些，要不然看错误麻烦
      */
-    @ExceptionHandler(value = Exception.class)
-    public Object defaultErrorHandler(HttpServletRequest request, Exception e) {
-        //判断是否是Ajax的异常请求（如果是Ajax的那么就是返回json格式）
-        if (isAjax(request)) {
-            //如果是自定义的异常
-            return handle(request,e);
-        } else {
-            //如果是系统内部发生异常，那么就返回到错误页面进行友好的提示
-            ModelAndView mav = new ModelAndView();
-            //这些就是要返回到页面的内容（其实不用都行，反正用户也不懂，没必要在页面显示都可以，先写着吧）
-            mav.addObject("exception", e);
-            mav.addObject("url", request.getRequestURL());
-            mav.setViewName(DEFAULT_ERROR_VIEW);
-            return mav;
-        }
-    }
+//    @ExceptionHandler(value = Exception.class)
+//    public Object defaultErrorHandler(HttpServletRequest request, Exception e) {
+//        //判断是否是Ajax的异常请求（如果是Ajax的那么就是返回json格式）
+//        if (isAjax(request)) {
+//            //如果是自定义的异常
+//            return handle(request,e);
+//        } else {
+//            //如果是系统内部发生异常，那么就返回到错误页面进行友好的提示
+//            ModelAndView mav = new ModelAndView();
+//            //这些就是要返回到页面的内容（其实不用都行，反正用户也不懂，没必要在页面显示都可以，先写着吧）
+//            mav.addObject("exception", e);
+//            mav.addObject("url", request.getRequestURL());
+//            mav.setViewName(DEFAULT_ERROR_VIEW);
+//            return mav;
+//        }
+//    }
 
 }
