@@ -40,6 +40,7 @@
         <rocketmq.version>4.2.0</rocketmq.version>
 
         <hutool.version>4.3.2</hutool.version>
+        <fastjson.version>1.2.47</fastjson.version>
     </properties>
 
     <!-- 对子模块依赖进行管理 -->
@@ -140,6 +141,11 @@
                 <groupId>cn.hutool</groupId>
                 <artifactId>hutool-core</artifactId>
                 <version>${hutool.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>${fastjson.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

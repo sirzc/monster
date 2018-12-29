@@ -11,6 +11,10 @@
     <name>monster-core</name>
 
     <dependencies>
+        <dependency>
+            <groupId>com.yunli</groupId>
+            <artifactId>monster-utils</artifactId>
+        </dependency>
         <!-- mysql 数据库驱动 -->
         <dependency>
             <groupId>mysql</groupId>
