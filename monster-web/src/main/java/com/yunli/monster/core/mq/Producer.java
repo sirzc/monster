@@ -1,6 +1,6 @@
 package com.yunli.monster.core.mq;
 
-import com.yunli.monster.DateUtil;
+import com.yunli.monster.core.util.DateUtil;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.apache.rocketmq.client.producer.SendResult;
@@ -52,7 +52,7 @@ public class Producer {
 
     public static void test2() throws MQClientException, InterruptedException {
         DefaultMQProducer producer = new DefaultMQProducer("OrderProducer");
-        producer.setNamesrvAddr("192.168.199.159:9876");
+        producer.setNamesrvAddr("10.1.55.180:9876");
         //调用start()方法启动一个producer实例
         producer.start();
         //发送10条消息到Topic为TopicTest，tag为TagA，消息内容为“Hello RocketMQ”拼接上i的值
