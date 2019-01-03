@@ -8,7 +8,8 @@ import org.apache.rocketmq.common.message.MessageQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -33,10 +34,10 @@ public class OrderCustomer {
         }
     }
 
-    public static <T> T getMessageQueue(LinkedList<T> mgs, Object tags) {
+    public static <T> T getMessageQueue(List<T> mqs, Object tags) {
         int code = tags.hashCode();
-        int index = code % mgs.size();
-        return mgs.get(index);
+        int index = code % mqs.size();
+        return mqs.get(Math.abs(index));
     }
 
     public static Boolean checkMessage(PullResult pullResult) {
@@ -65,8 +66,8 @@ public class OrderCustomer {
         try {
             Set<MessageQueue> mqs = consumer.fetchSubscribeMessageQueues(topic);
             consumer.getOffsetStore().load();
-            LinkedList<MessageQueue> linkedList = new LinkedList<>();
-            linkedList.addAll(mqs);
+            List<MessageQueue> linkedList = new ArrayList<>(mqs);
+            Collections.sort(linkedList);
             MessageQueue mq = getMessageQueue(linkedList, tags);
             // 对于从存储端获取消费进度
             long offset = consumer.fetchConsumeOffset(mq, true);
@@ -86,7 +87,4 @@ public class OrderCustomer {
         }
     }
 
-    public static void main(String[] args) {
-        System.err.println("TAGS1".hashCode());
-    }
 }

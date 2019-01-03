@@ -7,7 +7,8 @@ import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.apache.rocketmq.common.message.MessageQueue;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -31,8 +32,8 @@ public class Customer {
         }
     }
 
-    public static  MessageQueue getMessageQueue(LinkedList<MessageQueue> mgs, Object tags) {
-        int code = tags.hashCode();
+    public static  MessageQueue getMessageQueue(List<MessageQueue> mgs, Object arg) {
+        Integer code = (Integer) arg;
         int index = code % mgs.size();
         return mgs.get(index);
     }
@@ -41,9 +42,9 @@ public class Customer {
         // 拉取所有消息
         Set<MessageQueue> mqs = consumer.fetchSubscribeMessageQueues("OrderTopic1");
         consumer.getOffsetStore().load();
-        LinkedList<MessageQueue> linkedList = new LinkedList<>();
-        linkedList.addAll(mqs);
-        MessageQueue mq = getMessageQueue(linkedList, DateUtil.getDay());
+        List<MessageQueue> linkedList = new ArrayList<>(mqs);
+        Collections.sort(linkedList);
+        MessageQueue mq = getMessageQueue(linkedList, 106);
         // 对于从存储端获取消费进度
         long offset = consumer.fetchConsumeOffset(mq, true);
         PullResult pullResult = consumer.pullBlockIfNotFound(mq, DateUtil.getDay(), offset, maxNums);
@@ -72,14 +73,16 @@ public class Customer {
     public static void main(String[] args) {
         new Thread(() -> {
             try {
-                test(1);
+                test(3);
+                System.err.println("========================【3】=====================");
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }).start();
         new Thread(() -> {
             try {
-                test(1);
+                test(5);
+                System.err.println("========================【5】=====================");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -87,6 +90,7 @@ public class Customer {
         new Thread(() -> {
             try {
                 test(2);
+                System.err.println("========================【2】=====================");
             } catch (Exception e) {
                 e.printStackTrace();
             }

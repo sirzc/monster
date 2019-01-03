@@ -18,7 +18,8 @@ import java.util.List;
 public class Producer {
 
     private static List<String> orderIds =
-            Arrays.asList("201812190001", "201812190002", "201812190003", "201812190004", "201812190005", "201812190006");
+            Arrays.asList("201812190001", "201812190002", "201812190003", "201812190004", "201812190005",
+                    "201812190006", "201812190007", "201812190008", "201812190009", "201812190010");
 
     public static void test1() throws MQClientException, InterruptedException {
 
@@ -61,6 +62,7 @@ public class Producer {
                 Message msg = new Message("OrderTopic1", DateUtil.getDay(), DateUtil.getDay(),
                         (DateUtil.getTime() + ":" + orderIds.get(i)).getBytes("utf-8"));
                 SendResult result = producer.send(msg, (mqs, msg1, arg) -> {
+                    // 根据arg指定存储消息的队列
                     Integer id = (Integer) arg;
                     int index = id % mqs.size();
                     return mqs.get(index);
@@ -72,7 +74,7 @@ public class Producer {
             }
         }
         //发送完消息之后，调用shutdown()方法关闭producer
-//        producer.shutdown();
+        //        producer.shutdown();
     }
 
     public static void main(String[] args) throws MQClientException, InterruptedException {

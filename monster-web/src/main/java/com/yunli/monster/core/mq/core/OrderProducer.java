@@ -52,10 +52,10 @@ public class OrderProducer {
         try {
             Message message = new Message(topic, tags, (msg).getBytes("utf-8"));
             result = producer.send(message, (mqs, msg1, arg) -> {
-                Integer id = (Integer) arg;
+                Integer id = arg.hashCode();
                 int index = id % mqs.size();
-                return mqs.get(index);
-            }, 1000);
+                return mqs.get(Math.abs(index));
+            }, tags);
         } catch (Exception e) {
             logger.error("消息发送异常");
             e.printStackTrace();
