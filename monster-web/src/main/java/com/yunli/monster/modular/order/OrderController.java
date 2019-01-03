@@ -38,9 +38,7 @@ public class OrderController {
         OrderProducer producer = mqConfig.orderProducer();
         List<SendResult> results = new ArrayList<>();
         for (int i = 0; i < num; i++) {
-            String timestamp = String.valueOf(System.currentTimeMillis());
-            System.err.println(timestamp);
-            results.add(producer.send("TOPIC-1" + DateUtil.getDay(), "TAGS", timestamp));
+            results.add(producer.send("TOPIC-1" + DateUtil.getDay(), "TAGS", DateUtil.getTime() + "=" + i));
         }
         return results;
     }
@@ -49,7 +47,7 @@ public class OrderController {
     public List<String> getOrderNum(@PathVariable int num) {
         List<String> list = new ArrayList<>();
         OrderCustomer customer = mqConfig.orderCustomer();
-        List<MessageExt> mes = customer.listMessage("TOPIC-1" + DateUtil.getDay(), "TAGS",num);
+        List<MessageExt> mes = customer.listMessage("TOPIC-1" + DateUtil.getDay(), "TAGS", num);
         if (null != mes) {
             for (MessageExt me : mes) {
                 try {
