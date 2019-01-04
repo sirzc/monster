@@ -20,13 +20,32 @@ import java.util.Set;
  * @create 2019-01-02 14:31
  */
 public class OrderCustomer {
-    
-    private static final Logger                logger   = LoggerFactory.getLogger(OrderCustomer.class);
 
-    private static       DefaultMQPullConsumer consumer = new DefaultMQPullConsumer("ZC_GROUP_5");
+    private static final Logger logger = LoggerFactory.getLogger(OrderCustomer.class);
 
-    public void init(){
-        consumer.setNamesrvAddr("10.1.55.180:9876");
+    private static DefaultMQPullConsumer consumer;
+    private String nameServer;
+    private String customerGroup;
+
+    public String getNameServer() {
+        return nameServer;
+    }
+
+    public void setNameServer(String nameServer) {
+        this.nameServer = nameServer;
+    }
+
+    public String getCustomerGroup() {
+        return customerGroup;
+    }
+
+    public void setCustomerGroup(String customerGroup) {
+        this.customerGroup = customerGroup;
+    }
+
+    public void init() {
+        consumer = new DefaultMQPullConsumer(this.customerGroup);
+        consumer.setNamesrvAddr(this.nameServer);
         try {
             consumer.start();
         } catch (MQClientException e) {
@@ -61,7 +80,7 @@ public class OrderCustomer {
         return result;
     }
 
-    public synchronized List<MessageExt> listMessage(String topic,String tags,int maxNum) {
+    public synchronized List<MessageExt> listMessage(String topic, String tags, int maxNum) {
         // 拉取所有消息
         try {
             Set<MessageQueue> mqs = consumer.fetchSubscribeMessageQueues(topic);
@@ -75,12 +94,12 @@ public class OrderCustomer {
             consumer.getOffsetStore().updateOffset(mq, pullResult.getNextBeginOffset(), false);
             consumer.getOffsetStore().persist(mq);
             Boolean check = checkMessage(pullResult);
-            if (true == check ) {
+            if (true == check) {
                 return pullResult.getMsgFoundList();
-            } else  {
+            } else {
                 return null;
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             logger.error("单号获取异常");
             e.printStackTrace();
             return null;

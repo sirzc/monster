@@ -17,13 +17,32 @@ public class OrderProducer {
 
     private static final Logger logger = LoggerFactory.getLogger(OrderProducer.class);
 
-    private DefaultMQProducer producer = new DefaultMQProducer("OrderProducer-1");
+    private DefaultMQProducer producer;
+    private String nameServer;
+    private String producerGroup;
+
+    public String getNameServer() {
+        return nameServer;
+    }
+
+    public void setNameServer(String nameServer) {
+        this.nameServer = nameServer;
+    }
+
+    public String getProducerGroup() {
+        return producerGroup;
+    }
+
+    public void setProducerGroup(String producerGroup) {
+        this.producerGroup = producerGroup;
+    }
 
     /**
      * 初始化
      */
     public void init() {
-        producer.setNamesrvAddr("10.1.55.180:9876");
+        producer = new DefaultMQProducer(this.producerGroup);
+        producer.setNamesrvAddr(this.nameServer);
         producer.setRetryTimesWhenSendFailed(3);
         try {
             producer.start();

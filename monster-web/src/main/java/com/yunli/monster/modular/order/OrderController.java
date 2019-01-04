@@ -1,6 +1,6 @@
 package com.yunli.monster.modular.order;
 
-import com.yunli.monster.core.mq.core.MqConfig;
+import com.yunli.monster.core.config.MqConfig;
 import com.yunli.monster.core.mq.core.OrderCustomer;
 import com.yunli.monster.core.mq.core.OrderProducer;
 import com.yunli.monster.core.util.DateUtil;
@@ -38,7 +38,7 @@ public class OrderController {
         OrderProducer producer = mqConfig.orderProducer();
         List<SendResult> results = new ArrayList<>();
         for (int i = 0; i < num; i++) {
-            results.add(producer.send("TOPIC-1" + DateUtil.getDay(), "TAGS", DateUtil.getTime() + "=" + i));
+            results.add(producer.send("TOPIC-" + DateUtil.getDay(), "TAGS", DateUtil.getTime() + "=" + i));
         }
         return results;
     }
@@ -47,7 +47,7 @@ public class OrderController {
     public List<String> getOrderNum(@PathVariable int num) {
         List<String> list = new ArrayList<>();
         OrderCustomer customer = mqConfig.orderCustomer();
-        List<MessageExt> mes = customer.listMessage("TOPIC-1" + DateUtil.getDay(), "TAGS", num);
+        List<MessageExt> mes = customer.listMessage("TOPIC-" + DateUtil.getDay(), "TAGS", num);
         if (null != mes) {
             for (MessageExt me : mes) {
                 try {

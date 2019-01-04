@@ -3,6 +3,12 @@ server:
   servlet:
     context-path: /
 
+mq:
+  name-server: rocketmq-nameserver1:9876;rocketmq-nameserver2:9876
+  consumer-group: ZC_GROUP_5
+  producer-group: OrderProducer-1
+
+
 #spring 相关配置
 spring:
   profiles:
@@ -34,7 +40,8 @@ mybatis-plus:
 ###本地环境
 ---
 spring:
-  profiles: local
+  profiles:
+    active: test,mq
   datasource:
     url: jdbc:mysql://localhost:3306/unitop-job?useUnicode=true&characterEncoding=UTF-8
     username: root
