@@ -4,9 +4,9 @@ server:
     context-path: /
 
 mq:
-  name-server: rocketmq-nameserver1:9876;rocketmq-nameserver2:9876
-  consumer-group: ZC_GROUP_5
-  producer-group: OrderProducer-1
+  name-server: 10.1.55.180:9876
+  consumer-group: ZC_GROUP_6
+  producer-group: OrderProducer-6
 
 
 #spring 相关配置

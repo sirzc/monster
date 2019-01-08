@@ -20,9 +20,30 @@
             </pattern>
         </encoder>
     </appender>
+<!--
+    <appender name="mqAppender1" class="org.apache.rocketmq.logappender.logback.RocketmqLogbackAppender">
+        <tag>TAGS</tag>
+        <topic>T-2019-01-08</topic>
+        <producerGroup>OrderProducer-6</producerGroup>
+        <nameServerAddress>rocketmq-nameserver3:8888;rocketmq-nameserver4:9999</nameServerAddress>
+        <layout>
+            <pattern>%date %p %t - %m%n</pattern>
+        </layout>
+    </appender>
 
+    <appender name="mqAsyncAppender1" class="ch.qos.logback.classic.AsyncAppender">
+        <queueSize>1024</queueSize>
+        <discardingThreshold>80</discardingThreshold>
+        <maxFlushTime>2000</maxFlushTime>
+        <neverBlock>true</neverBlock>
+        <appender-ref ref="mqAppender1"/>
+    </appender>
+-->
     <root level="info">
         <appender-ref ref="console"/>
+        <!--
+        <appender-ref ref="mqAppender1"/>
+        -->
     </root>
 
 </configuration>

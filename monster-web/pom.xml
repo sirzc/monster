@@ -17,10 +17,6 @@
             <groupId>com.yunli</groupId>
             <artifactId>monster-core</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.yunli</groupId>
-            <artifactId>monster-log</artifactId>
-        </dependency>
         <!--spring boot依赖-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
