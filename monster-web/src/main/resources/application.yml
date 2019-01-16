@@ -4,9 +4,9 @@ server:
     context-path: /
 
 mq:
-  name-server: 10.1.55.180:9876
-  consumer-group: ZC_GROUP_6
-  producer-group: OrderProducer-6
+  name-server: 10.1.55.180:9999
+  consumer-group: AN_CM_G
+  producer-group: AN_PD_G
 
 
 #spring 相关配置

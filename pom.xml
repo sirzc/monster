@@ -19,8 +19,8 @@
         <module>monster-core</module>
         <module>monster-utils</module>
         <module>monster-web</module>
-        <module>monster-log</module>
         <module>monster-other</module>
+        <module>monster-mq</module>
     </modules>
 
     <properties>

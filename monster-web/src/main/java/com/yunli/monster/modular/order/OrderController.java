@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,11 +50,7 @@ public class OrderController {
         List<MessageExt> mes = customer.listMessage("TOPIC-" + DateUtil.getDay(), "TAGS", num);
         if (null != mes) {
             for (MessageExt me : mes) {
-                try {
-                    list.add(new String(me.getBody(), "utf-8"));
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
+                list.add(new String(me.getBody(), StandardCharsets.UTF_8));
             }
         }
         return list;
