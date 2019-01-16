@@ -1,7 +1,7 @@
 package com.yunli.mq.producer;
 
-import com.lede.tech.rocketmq.easyclient.common.constant.MQConstant;
-import com.lede.tech.rocketmq.easyclient.common.exception.MqConsumerConfigException;
+import com.yunli.mq.common.MQConstantPool;
+import com.yunli.mq.exception.MqProducerConfigException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,55 +10,79 @@ import java.io.InputStream;
 import java.util.Properties;
 
 /**
- * @Desc
- * @Author bjguosong
- * @Author ykhu
+ * 生产者 工厂类
+ *
+ * @author zhouchao
+ * @date 2019-01-16 21:17
  */
 public class UnitopMQProducerFactory {
-    private static final Logger         logger = LoggerFactory.getLogger(UnitopMQProducerFactory.class);
+    private static final Logger logger = LoggerFactory.getLogger(UnitopMQProducerFactory.class);
 
     private static UnitopMQProducer producer;
 
-    public static UnitopMQProducer getProducer(String producerGroup) {
+    /**
+     * 获取默认配置生产者
+     *
+     * @return
+     */
+    public static UnitopMQProducer getProducer() {
         try {
             if (producer == null) {
                 synchronized (UnitopMQProducerFactory.class) {
                     if (producer == null) {
-                        init(producerGroup);
+                        init();
                     }
                 }
             }
         } catch (Exception e) {
-            logger.error("easymq wrong. producer init error.", e);
+            logger.error("producer init error.error message {}", e);
         }
         return producer;
     }
 
-    private static void init(String producerGroup) {
+
+    /**
+     * 生产者初始化
+     */
+    private static void init() {
         Properties prop = getConfigProp();
         buildProducer(prop);
     }
 
+    /**
+     * 获取生产者静态配置
+     *
+     * @return
+     */
     private static Properties getConfigProp() {
-        //从配置文件读取
+        // 从配置文件读取
         Properties props = new Properties();
-        String filePath = MQConstant.CONFIG_DIR + "/" + MQConstant.CONFIG_DIR_PRODUCERS + "/"
-                + MQConstant.DEFAULT_PRODUCER_FILENAME;
+        // 获取配置文件路径
+        String filePath = null;
+        if (MQConstantPool.ROOT_DIR.trim().length() > 0) {
+            filePath = MQConstantPool.ROOT_DIR + "/" + MQConstantPool.DEFAULT_PRODUCER_FILE;
+        } else {
+            filePath = MQConstantPool.DEFAULT_PRODUCER_FILE;
+        }
         try {
-            InputStream in = EasyMQProducerFactory.class.getClassLoader().getResourceAsStream(filePath);
+            InputStream in = UnitopMQProducerFactory.class.getClassLoader().getResourceAsStream(filePath);
             props.load(in);
-            //			props.load(Files.newInputStream(configPath));
         } catch (IOException e) {
-            String warn = "easymq wrong. producer read config io error. configPath:" + filePath;
-            LOG.fatal(warn, e);
-            throw new MqConsumerConfigException(warn, e);
+            String warn = "unitop-mq wrong.producer read config io error. configPath:" + filePath;
+            logger.warn(warn, e);
+            throw new MqProducerConfigException(warn, e);
         }
         return props;
     }
 
+    /**
+     * 创建消费者
+     *
+     * @param prop
+     */
     private static void buildProducer(Properties prop) {
-        LOG.info("easymq running. producer use:" + prop);
-        producer = new EasyMQProducer(prop);
+        logger.info("unitop-mq running. producer use:{}", prop);
+        producer = new UnitopMQProducer(prop);
     }
 
 }

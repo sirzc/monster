@@ -1,7 +1,8 @@
 package com.yunli.mq.exception;
 
 /**
- * 配置文件异常
+ * 自定义配置文件异常
+ *
  * @author zhouchao
  * @date 2019-01-16 17:09
  */
