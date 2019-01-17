@@ -1,6 +1,7 @@
 package com.yunli.mq.common;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 /**
  * 消息传输类
@@ -23,6 +24,17 @@ public class MessageData<T> implements Serializable {
      * 具体消息内容
      */
     private              T      obj;
+
+    public MessageData() {
+        super();
+    }
+
+    public MessageData(T obj) {
+        super();
+        this.obj = obj;
+        this.uuid = UUID.randomUUID().toString().replace("-", "");
+        this.timestamp = System.currentTimeMillis();
+    }
 
     public Long getTimestamp() {
         return timestamp;

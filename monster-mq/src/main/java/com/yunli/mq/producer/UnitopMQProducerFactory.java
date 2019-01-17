@@ -45,7 +45,7 @@ public class UnitopMQProducerFactory {
      * 生产者初始化
      */
     private static void init() {
-        Properties prop = getConfigProp();
+        Properties prop = getConfigProperties();
         buildProducer(prop);
     }
 
@@ -54,7 +54,7 @@ public class UnitopMQProducerFactory {
      *
      * @return
      */
-    private static Properties getConfigProp() {
+    private static Properties getConfigProperties() {
         // 从配置文件读取
         Properties props = new Properties();
         // 获取配置文件路径

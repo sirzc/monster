@@ -1,13 +1,20 @@
 package com.yunli.mq.producer;
 
 import com.yunli.mq.common.MQConstantPool;
+import com.yunli.mq.common.MessageData;
+import com.yunli.mq.exception.MqBusinessException;
 import com.yunli.mq.exception.MqProducerConfigException;
+import com.yunli.mq.exception.MqWrapperException;
+import com.yunli.mq.producer.config.CustomMessageConfig;
+import com.yunli.mq.producer.enums.ProducerSendModeEnum;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
+import org.apache.rocketmq.client.producer.SendCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Objects;
 import java.util.Properties;
 
 /**
@@ -70,7 +77,7 @@ public class UnitopMQProducer {
     }
 
     /**
-     * 检查有效性
+     * 检查生产者配置文件有效性
      *
      * @param props
      * @return
@@ -94,79 +101,96 @@ public class UnitopMQProducer {
         }
         return true;
 
-
     }
 
-//    private void checkConfig(EasyMQMessageConfig config) throws MqBussinessException {
-//        if (Objects.isNull(config)) {
-//            throw new MqBussinessException("EasyMQMessageConfig config can not be null.");
-//        }
-//        if (Objects.isNull(config.getTransferMode())) {
-//            throw new MqBussinessException("EasyMQMessageConfig transferMode can not be null.");
-//        }
-//        if (StringUtils.isEmpty(config.getTopic())) {
-//            throw new MqBussinessException("EasyMQMessageConfig topic can not be empty.");
-//        }
-//        if (StringUtils.isEmpty(config.getKeys())) {
-//            throw new MqBussinessException("EasyMQMessageConfig keys can not be empty.");
-//        }
-//        if (StringUtils.isEmpty(config.getMessage())) {
-//            throw new MqBussinessException("EasyMQMessageConfig message can not be empty.");
-//        }
-//        if (StringUtils.isEmpty(config.getCharSet())) {
-//            throw new MqBussinessException("EasyMQMessageConfig charset can not be empty.");
-//        }
-//        if (StringUtils.isEmpty(config.getTags())) {
-//            throw new MqBussinessException("EasyMQMessageConfig tags can not be empty.");
-//        }
-//    }
-
     /**
-     * 发送方式同步，编码UTF-8。
+     * 检查消息配置有效性
      *
-     * @param topic
-     * @param keys
-     * @param msg
-     * @throws MqWapperException
-     * @throws MqBussinessException
+     * @param config
+     * @throws MqBusinessException
      */
-//    public void sendMsg(String topic, String keys, String msg) throws MqWapperException, MqBussinessException {
-//        EasyMQMessageConfig config = new EasyMQMessageConfig(topic, keys, msg);
-//        config.getTransferMode().sendMsg(producer, config);
-//    }
-
-    /**
-     * 发送方式异步，编码为UTF-8。
-     *
-     * @param topic
-     * @param keys
-     * @param msg
-     * @param callback
-     * @throws MqWapperException
-     * @throws MqBussinessException
-     */
-//    public void sendMsg(String topic, String keys, String msg, SendCallback callback)
-//            throws MqWapperException, MqBussinessException {
-//        EasyMQMessageConfig config = new EasyMQMessageConfig(topic, keys, msg);
-//        config.setTransferMode(ProducerTransferMode.ASYNC);
-//        config.setCallback(callback);
-//        config.getTransferMode().sendMsg(producer, config);
-//    }
+    private void checkConfig(CustomMessageConfig config) throws MqBusinessException {
+        if (Objects.isNull(config)) {
+            throw new MqBusinessException("自定义消息配置不能为空.");
+        }
+        if (Objects.isNull(config.getSendMode())) {
+            throw new MqBusinessException("自定义消息配置: 发送模式不能为空.");
+        }
+        if (StringUtils.isEmpty(config.getTopic())) {
+            throw new MqBusinessException("自定义消息配置: 消息主题不能为空.");
+        }
+        if (Objects.isNull(config.getMessage())) {
+            throw new MqBusinessException("自定义消息配置: 消息内容不能为空.");
+        }
+    }
 
     /**
      * 定制化发送
      *
      * @param config
-     * @throws MqWapperException
-     * @throws MqBussinessException
+     * @throws MqBusinessException
+     * @throws MqWrapperException
      */
-//    public void sendMsg(EasyMQMessageConfig config) throws MqWapperException, MqBussinessException {
-//        checkConfig(config);
-//        if (Objects.nonNull(config.getCallback())) {
-//            config.setTransferMode(ProducerTransferMode.ASYNC);
-//        }
-//        ProducerTransferMode transferMode = config.getTransferMode();
-//        transferMode.sendMsg(producer, config);
-//    }
+    public void sendMsg(CustomMessageConfig config) throws MqBusinessException, MqWrapperException {
+        // 校验消息合法
+        checkConfig(config);
+        // 判断消息模式
+        if (Objects.nonNull(config.getCallback())) {
+            config.setSendMode(ProducerSendModeEnum.ASYNC);
+        }
+        ProducerSendModeEnum sendMode = config.getSendMode();
+        sendMode.sendMsg(producer, config);
+    }
 
+    /**
+     * ****************************** 【同步发送】 *********************************
+     */
+
+    public void send(String topic, MessageData msg) throws MqBusinessException, MqWrapperException {
+        send(topic, "", "", msg, null);
+    }
+
+    public void send(String topic, String tags, MessageData msg) throws MqBusinessException, MqWrapperException {
+        send(topic, tags, "", msg, null);
+    }
+
+    public void send(String topic, String tags, String keys, MessageData msg)
+            throws MqBusinessException, MqWrapperException {
+        send(topic, tags, keys, msg, null);
+    }
+
+    /**
+     * ****************************** 【异步发送】 **********************************
+     */
+
+    public void send(String topic, MessageData msg, SendCallback callback)
+            throws MqBusinessException, MqWrapperException {
+        send(topic, "", "", msg, callback);
+    }
+
+    public void send(String topic, String tags, MessageData msg, SendCallback callback)
+            throws MqBusinessException, MqWrapperException {
+        send(topic, tags, "", msg, callback);
+    }
+
+    /**
+     * 发送消息
+     *
+     * @param topic    主题
+     * @param tags     标签
+     * @param keys
+     * @param msg      消息内容
+     * @param callback 回调函数（异步：须填写）
+     * @throws MqBusinessException
+     * @throws MqWrapperException
+     */
+    public void send(String topic, String tags, String keys, MessageData msg, SendCallback callback)
+            throws MqBusinessException, MqWrapperException {
+        CustomMessageConfig config = new CustomMessageConfig(topic, tags, keys, msg);
+        // 回调函数不为空，则发送模式设置为异步
+        if (Objects.nonNull(callback)) {
+            config.setSendMode(ProducerSendModeEnum.ASYNC);
+        }
+        config.getSendMode().sendMsg(producer, config);
+    }
 }

@@ -3,7 +3,7 @@ package com.yunli.mq.producer.config;
 
 import com.yunli.mq.common.MessageData;
 import com.yunli.mq.producer.enums.MessageDelayLevelEnum;
-import com.yunli.mq.producer.enums.ProducerSendMode;
+import com.yunli.mq.producer.enums.ProducerSendModeEnum;
 import org.apache.rocketmq.client.producer.SendCallback;
 import org.apache.rocketmq.remoting.common.RemotingHelper;
 
@@ -18,35 +18,35 @@ public class CustomMessageConfig {
     /**
      * 发送模式 同步、异步、one-way
      */
-    private ProducerSendMode sendMode;
+    private ProducerSendModeEnum  sendMode;
     /**
      * topic 主题
      */
-    private String topic;
+    private String                topic;
     /**
      * tags 主题下的标签，暂统一为default
      */
-    private String tags;
+    private String                tags;
     /**
      * keys 消息对应的key，建议每个消息有唯一的key
      */
-    private String keys;
+    private String                keys;
     /**
      * message 消息
      */
-    private MessageData message;
+    private MessageData           message;
     /**
      * charSet 编码
      */
-    private String charSet;
+    private String                charSet;
     /**
      * callback 异步调用时，使用的回调函数
      */
-    private SendCallback callback;
+    private SendCallback          callback;
     /**
      * sort 顺序消息需要的参数，该参数相同值下的消息保证有序
      */
-    private Object sort;
+    private Object                sort;
     /**
      * delayLevel 延迟发送级别
      */
@@ -65,18 +65,18 @@ public class CustomMessageConfig {
         this.tags = tags;
         this.keys = keys;
         this.message = message;
-        this.sendMode = ProducerSendMode.SYNC;
+        this.sendMode = ProducerSendModeEnum.SYNC;
         this.charSet = RemotingHelper.DEFAULT_CHARSET;
         this.callback = null;
-        this.sort = "";
+        this.sort = null;
         this.delayLevel = null;
     }
 
-    public ProducerSendMode getSendMode() {
+    public ProducerSendModeEnum getSendMode() {
         return sendMode;
     }
 
-    public void setSendMode(ProducerSendMode sendMode) {
+    public void setSendMode(ProducerSendModeEnum sendMode) {
         this.sendMode = sendMode;
     }
 
@@ -142,5 +142,12 @@ public class CustomMessageConfig {
 
     public void setDelayLevel(MessageDelayLevelEnum delayLevel) {
         this.delayLevel = delayLevel;
+    }
+
+    @Override
+    public String toString() {
+        return "CustomMessageConfig{" + "sendMode=" + sendMode + ", topic='" + topic + '\'' + ", tags='" + tags + '\''
+                + ", keys='" + keys + '\'' + ", message=" + message + ", charSet='" + charSet + '\'' + ", callback="
+                + callback + ", sort=" + sort + ", delayLevel=" + delayLevel + '}';
     }
 }
