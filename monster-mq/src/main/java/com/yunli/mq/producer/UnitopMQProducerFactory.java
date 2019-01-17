@@ -68,7 +68,7 @@ public class UnitopMQProducerFactory {
             InputStream in = UnitopMQProducerFactory.class.getClassLoader().getResourceAsStream(filePath);
             props.load(in);
         } catch (IOException e) {
-            String warn = "unitop-mq wrong.producer read config io error. configPath:" + filePath;
+            String warn = "配置加载异常，找不到文件" + filePath;
             logger.warn(warn, e);
             throw new MqProducerConfigException(warn, e);
         }
@@ -81,7 +81,7 @@ public class UnitopMQProducerFactory {
      * @param prop
      */
     private static void buildProducer(Properties prop) {
-        logger.info("unitop-mq running. producer use:{}", prop);
+        logger.info("加载 unitop-mq 默认生产者配置");
         producer = new UnitopMQProducer(prop);
     }
 

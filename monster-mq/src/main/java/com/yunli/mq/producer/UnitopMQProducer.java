@@ -1,12 +1,12 @@
-package com.yunli.mq.producer;
+package com.unitop.mq.producer;
 
-import com.yunli.mq.common.MQConstantPool;
-import com.yunli.mq.exception.MqProducerConfigException;
-import com.yunli.mq.common.MessageData;
-import com.yunli.mq.exception.MqBusinessException;
-import com.yunli.mq.exception.MqWrapperException;
-import com.yunli.mq.producer.config.CustomMessageConfig;
-import com.yunli.mq.producer.enums.ProducerSendModeEnum;
+import com.unitop.mq.common.MQConstantPool;
+import com.unitop.mq.exception.MqProducerConfigException;
+import com.unitop.mq.common.MessageData;
+import com.unitop.mq.exception.MqBusinessException;
+import com.unitop.mq.exception.MqWrapperException;
+import com.unitop.mq.producer.config.CustomMessageConfig;
+import com.unitop.mq.producer.enums.ProducerSendModeEnum;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
@@ -39,7 +39,7 @@ public class UnitopMQProducer {
      */
     private void init(Properties prop) {
         if (!checkVaild(prop)) {
-            throw new MqProducerConfigException("unitop wrong. producer config properties error.");
+            throw new MqProducerConfigException("unitop-mq配置文件加载异常");
         }
         // 创建Rocket MQ client 实例
         producer = new DefaultMQProducer(prop.getProperty(MQConstantPool.UNITOP_PRODUCER_GROUPNAME));
@@ -61,9 +61,9 @@ public class UnitopMQProducer {
         }
         try {
             producer.start();
-            logger.info("unitop-mq running. a producer started. use properties:" + prop);
+            logger.info("unitop-mq 正常启动，生产者启动，当前配置为:" + prop);
         } catch (MQClientException e) {
-            String warn = "unitop-mq wrong. producer init failed. prop:" + prop;
+            String warn = "unitop-mq 启动异常，生产者加载异常，当前配置为:" + prop;
             logger.warn(warn, e);
             throw new MqProducerConfigException(warn, e);
         }
@@ -111,16 +111,16 @@ public class UnitopMQProducer {
      */
     private void checkConfig(CustomMessageConfig config) throws MqBusinessException {
         if (Objects.isNull(config)) {
-            throw new MqBusinessException("自定义消息配置不能为空.");
+            throw new MqBusinessException("消息配置不能为空.");
         }
         if (Objects.isNull(config.getSendMode())) {
-            throw new MqBusinessException("自定义消息配置: 发送模式不能为空.");
+            throw new MqBusinessException("消息配置: 发送模式不能为空.");
         }
         if (StringUtils.isEmpty(config.getTopic())) {
-            throw new MqBusinessException("自定义消息配置: 消息主题不能为空.");
+            throw new MqBusinessException("消息配置: 消息主题不能为空.");
         }
         if (Objects.isNull(config.getMessage())) {
-            throw new MqBusinessException("自定义消息配置: 消息内容不能为空.");
+            throw new MqBusinessException("消息配置: 消息内容不能为空.");
         }
     }
 
@@ -191,6 +191,9 @@ public class UnitopMQProducer {
         if (Objects.nonNull(callback)) {
             config.setSendMode(ProducerSendModeEnum.ASYNC);
         }
+        // 校验消息合法
+        checkConfig(config);
+        // 发送消息
         config.getSendMode().sendMsg(producer, config);
     }
 }

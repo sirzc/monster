@@ -1,4 +1,4 @@
-package com.yunli.mq.exception;
+package com.unitop.mq.exception;
 
 /**
  * 自定义配置文件异常

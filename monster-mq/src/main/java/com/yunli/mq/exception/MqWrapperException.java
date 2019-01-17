@@ -1,7 +1,7 @@
-package com.yunli.mq.exception;
+package com.unitop.mq.exception;
 
 /**
- * 消息包装异常
+ * RocketMq使用异常，自定义异常
  *
  * @author zc151
  * @date 2019-01-16 22:37

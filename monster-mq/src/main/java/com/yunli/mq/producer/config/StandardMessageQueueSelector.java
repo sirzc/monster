@@ -1,4 +1,4 @@
-package com.yunli.mq.producer.config;
+package com.unitop.mq.producer.config;
 
 import org.apache.rocketmq.client.producer.MessageQueueSelector;
 import org.apache.rocketmq.common.message.Message;

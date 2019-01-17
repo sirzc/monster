@@ -11,7 +11,7 @@ public class MQConstantPool {
     /**
      * 配置文件根路径
      */
-    public static final String ROOT_DIR = "";
+    public static final String ROOT_DIR = "mq";
 
     /**
      * 默认生产者配置文件名

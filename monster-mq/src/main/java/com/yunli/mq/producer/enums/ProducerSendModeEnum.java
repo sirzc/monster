@@ -1,10 +1,10 @@
 package com.yunli.mq.producer.enums;
 
 import com.alibaba.fastjson.JSON;
-import com.yunli.mq.exception.MqWrapperException;
-import com.yunli.mq.producer.config.StandardMessageQueueSelector;
 import com.yunli.mq.exception.MqBusinessException;
+import com.yunli.mq.exception.MqWrapperException;
 import com.yunli.mq.producer.config.CustomMessageConfig;
+import com.yunli.mq.producer.config.StandardMessageQueueSelector;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.client.producer.SendStatus;
@@ -19,7 +19,6 @@ import java.util.Objects;
  * @date 2019-01-16 21:52
  */
 public enum ProducerSendModeEnum {
-
     /**
      * 同步模式
      */
@@ -31,7 +30,7 @@ public enum ProducerSendModeEnum {
                 SendResult sendResult = producer.send(message);
                 SendStatus sendStatus = sendResult.getSendStatus();
                 if (!Objects.equals(sendStatus, SendStatus.SEND_OK)) {
-                    throw new MqBusinessException("send message return not ok. sendStatus:" + sendStatus.name());
+                    throw new MqBusinessException("消息发送异常. 返回：sendStatus:" + sendStatus.name());
                 }
             } catch (Exception e) {
                 throw new MqWrapperException(e);
@@ -45,7 +44,7 @@ public enum ProducerSendModeEnum {
                 SendResult sendResult = producer.send(message, new StandardMessageQueueSelector(), config.getSort());
                 SendStatus sendStatus = sendResult.getSendStatus();
                 if (!Objects.equals(sendStatus, SendStatus.SEND_OK)) {
-                    throw new MqBusinessException("send message return not ok. sendStatus:" + sendStatus.name());
+                    throw new MqBusinessException("消息发送异常. 返回：sendStatus:" + sendStatus.name());
                 }
             } catch (Exception e) {
                 throw new MqWrapperException(e);

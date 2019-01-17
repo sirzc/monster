@@ -1,9 +1,9 @@
-package com.yunli.mq.producer.config;
+package com.unitop.mq.producer.config;
 
 
-import com.yunli.mq.common.MessageData;
-import com.yunli.mq.producer.enums.MessageDelayLevelEnum;
-import com.yunli.mq.producer.enums.ProducerSendModeEnum;
+import com.unitop.mq.common.MessageData;
+import com.unitop.mq.producer.enums.MessageDelayLevelEnum;
+import com.unitop.mq.producer.enums.ProducerSendModeEnum;
 import org.apache.rocketmq.client.producer.SendCallback;
 import org.apache.rocketmq.remoting.common.RemotingHelper;
 

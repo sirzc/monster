@@ -1,7 +1,7 @@
-package com.yunli.mq.exception;
+package com.unitop.mq.exception;
 
 /**
- * MQ业务异常
+ * MQ业务异常:RokectMq异常全在这个异常
  *
  * @author zc151
  * @date 2019-01-16 21:52
