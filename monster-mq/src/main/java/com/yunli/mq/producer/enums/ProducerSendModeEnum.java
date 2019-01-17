@@ -1,10 +1,10 @@
 package com.yunli.mq.producer.enums;
 
 import com.alibaba.fastjson.JSON;
-import com.yunli.mq.exception.MqBusinessException;
 import com.yunli.mq.exception.MqWrapperException;
-import com.yunli.mq.producer.config.CustomMessageConfig;
 import com.yunli.mq.producer.config.StandardMessageQueueSelector;
+import com.yunli.mq.exception.MqBusinessException;
+import com.yunli.mq.producer.config.CustomMessageConfig;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.client.producer.SendStatus;

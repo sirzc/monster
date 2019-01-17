@@ -1,9 +1,9 @@
 package com.yunli.mq.producer;
 
 import com.yunli.mq.common.MQConstantPool;
+import com.yunli.mq.exception.MqProducerConfigException;
 import com.yunli.mq.common.MessageData;
 import com.yunli.mq.exception.MqBusinessException;
-import com.yunli.mq.exception.MqProducerConfigException;
 import com.yunli.mq.exception.MqWrapperException;
 import com.yunli.mq.producer.config.CustomMessageConfig;
 import com.yunli.mq.producer.enums.ProducerSendModeEnum;
