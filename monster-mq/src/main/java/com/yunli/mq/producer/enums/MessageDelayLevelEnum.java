@@ -8,6 +8,9 @@ package com.yunli.mq.producer.enums;
  */
 public enum MessageDelayLevelEnum {
 
+    /**
+     * 延迟级别枚举
+     */
     ONE_SECOND(1, "1s"), FIVE_SECONDS(2, "5s"), TEN_SECONDS(3, "10s"), THIRTY_SECONDS(4, "30s"), ONE_MINUTE(5,
             "1m"), TWO_MINUTES(6, "2m"), THREE_MINUTES(7, "3m"), FOUR_MINUTES(8, "4m"), FIVE_MINUTES(9,
             "5m"), SIX_MINUTES(10, "6m"), SEVEN_MINUTES(11, "7m"), EIGHT_MINUTES(12, "8m"), NINE_MINUTES(13,

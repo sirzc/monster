@@ -1,18 +1,18 @@
-package com.unitop.mq.producer;
+package com.yunli.mq.producer;
 
-import com.unitop.mq.common.MQConstantPool;
-import com.unitop.mq.exception.MqProducerConfigException;
-import com.unitop.mq.common.MessageData;
-import com.unitop.mq.exception.MqBusinessException;
-import com.unitop.mq.exception.MqWrapperException;
-import com.unitop.mq.producer.config.CustomMessageConfig;
-import com.unitop.mq.producer.enums.ProducerSendModeEnum;
-import org.apache.commons.lang3.StringUtils;
+import com.yunli.mq.common.MessageData;
+import com.yunli.mq.common.MqConstant;
+import com.yunli.mq.common.PropertiesUtil;
+import com.yunli.mq.exception.MqBusinessException;
+import com.yunli.mq.exception.MqProducerConfigException;
+import com.yunli.mq.producer.config.ProducerBuildConfig;
+import com.yunli.mq.producer.enums.ProducerTransferEnum;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.apache.rocketmq.client.producer.SendCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import java.util.Objects;
 import java.util.Properties;
@@ -23,47 +23,53 @@ import java.util.Properties;
  * @author zhouchao
  * @date 2019-01-16 9:17
  */
-public class UnitopMQProducer {
-    private static final Logger logger = LoggerFactory.getLogger(UnitopMQProducer.class);
+public class FastMqProducer {
+
+    private static final Logger logger = LoggerFactory.getLogger(FastMqProducer.class);
+
+    /**
+     * 获取配置文件操作类
+     */
+    private static Properties prop = PropertiesUtil.getProducerProperties();
 
     private DefaultMQProducer producer;
 
-    public UnitopMQProducer(Properties prop) {
-        init(prop);
+    public FastMqProducer(String prefix) {
+        init(prefix);
     }
 
     /**
      * 初始化生产者，并启动
      *
-     * @param prop
+     * @param prefix 配置属性的前缀
      */
-    private void init(Properties prop) {
-        if (!checkVaild(prop)) {
-            throw new MqProducerConfigException("unitop-mq配置文件加载异常");
+    private void init(String prefix) {
+        if (!checkVaild(prefix)) {
+            throw new MqProducerConfigException(">>>>>>>>>>>>> mq load " + prefix + " properties error.<<<<<<<<<<<<<");
         }
         // 创建Rocket MQ client 实例
-        producer = new DefaultMQProducer(prop.getProperty(MQConstantPool.UNITOP_PRODUCER_GROUPNAME));
-        producer.setNamesrvAddr(prop.getProperty(MQConstantPool.UNITOP_PRODUCER_NAMESERVER));
+        producer = new DefaultMQProducer(prop.getProperty(prefix + MqConstant.MQ_PRODUCER_GROUPNAME));
+        producer.setNamesrvAddr(prop.getProperty(prefix + MqConstant.MQ_PRODUCER_NAMESERVER));
         // 设置默认队列数
-        String topicQueueNums = prop.getProperty(MQConstantPool.UNITOP_PRODUCER_TOPICQUEUENUMS);
+        String topicQueueNums = prop.getProperty(prefix + MqConstant.MQ_PRODUCER_TOPICQUEUENUMS);
         if (!StringUtils.isEmpty(topicQueueNums)) {
             producer.setDefaultTopicQueueNums(Integer.parseInt(topicQueueNums));
         }
         // 设置超时时间
-        String timeout = prop.getProperty(MQConstantPool.UNITOP_PRODUCER_TIMEOUT);
+        String timeout = prop.getProperty(prefix + MqConstant.MQ_PRODUCER_SENDTIMEOUTMILLIS);
         if (!StringUtils.isEmpty(timeout)) {
             producer.setSendMsgTimeout(Integer.parseInt(timeout));
         }
         // 客户端实例名称
-        String instanceName = prop.getProperty(MQConstantPool.UNITOP_PRODUCER_INSTANCENAME);
+        String instanceName = prop.getProperty(prefix + MqConstant.MQ_PRODUCER_INSTANCENAME);
         if (!StringUtils.isEmpty(instanceName)) {
             producer.setInstanceName(instanceName);
         }
         try {
             producer.start();
-            logger.info("unitop-mq 正常启动，生产者启动，当前配置为:" + prop);
+            logger.info(">>>>>>>>>>>>> mq producer start {} properties", prefix);
         } catch (MQClientException e) {
-            String warn = "unitop-mq 启动异常，生产者加载异常，当前配置为:" + prop;
+            String warn = ">>>>>>>>>>>>> mq producer start " + prefix + " properties error.";
             logger.warn(warn, e);
             throw new MqProducerConfigException(warn, e);
         }
@@ -79,23 +85,25 @@ public class UnitopMQProducer {
     /**
      * 检查生产者配置文件有效性
      *
-     * @param props
+     * @param prefix
      * @return
      */
-    private boolean checkVaild(Properties props) {
-        String nameserver = props.getProperty(MQConstantPool.UNITOP_PRODUCER_NAMESERVER);
+    private boolean checkVaild(String prefix) {
+        String nameserver = prop.getProperty(prefix + MqConstant.MQ_PRODUCER_NAMESERVER);
         if (StringUtils.isEmpty(nameserver)) {
             return false;
         }
-        String groupname = props.getProperty(MQConstantPool.UNITOP_PRODUCER_GROUPNAME);
-        if (StringUtils.isEmpty(groupname)) {
+
+        String groupName = prop.getProperty(prefix + MqConstant.MQ_PRODUCER_GROUPNAME);
+        if (StringUtils.isEmpty(groupName)) {
             return false;
         }
-        String topicQueueNums = props.getProperty(MQConstantPool.UNITOP_PRODUCER_TOPICQUEUENUMS);
+
+        String topicQueueNums = prop.getProperty(prefix + MqConstant.MQ_PRODUCER_TOPICQUEUENUMS);
         if (!StringUtils.isEmpty(topicQueueNums) && !topicQueueNums.matches("[0-9]+")) {
             return false;
         }
-        String timeout = props.getProperty(MQConstantPool.UNITOP_PRODUCER_TIMEOUT);
+        String timeout = prop.getProperty(prefix + MqConstant.MQ_PRODUCER_SENDTIMEOUTMILLIS);
         if (!StringUtils.isEmpty(timeout) && !timeout.matches("[0-9]+")) {
             return false;
         }
@@ -109,18 +117,18 @@ public class UnitopMQProducer {
      * @param config
      * @throws MqBusinessException
      */
-    private void checkConfig(CustomMessageConfig config) throws MqBusinessException {
+    private void checkConfig(ProducerBuildConfig config) throws MqBusinessException {
         if (Objects.isNull(config)) {
-            throw new MqBusinessException("消息配置不能为空.");
+            throw new MqBusinessException("message config not null");
         }
         if (Objects.isNull(config.getSendMode())) {
-            throw new MqBusinessException("消息配置: 发送模式不能为空.");
+            throw new MqBusinessException("message send mode not null");
         }
         if (StringUtils.isEmpty(config.getTopic())) {
-            throw new MqBusinessException("消息配置: 消息主题不能为空.");
+            throw new MqBusinessException("message topic not null");
         }
         if (Objects.isNull(config.getMessage())) {
-            throw new MqBusinessException("消息配置: 消息内容不能为空.");
+            throw new MqBusinessException("message content not null");
         }
     }
 
@@ -129,16 +137,15 @@ public class UnitopMQProducer {
      *
      * @param config
      * @throws MqBusinessException
-     * @throws MqWrapperException
      */
-    public void sendMsg(CustomMessageConfig config) throws MqBusinessException, MqWrapperException {
+    public void sendMsg(ProducerBuildConfig config) throws MqBusinessException {
         // 校验消息合法
         checkConfig(config);
         // 判断消息模式
         if (Objects.nonNull(config.getCallback())) {
-            config.setSendMode(ProducerSendModeEnum.ASYNC);
+            config.setSendMode(ProducerTransferEnum.ASYNC);
         }
-        ProducerSendModeEnum sendMode = config.getSendMode();
+        ProducerTransferEnum sendMode = config.getSendMode();
         sendMode.sendMsg(producer, config);
     }
 
@@ -146,16 +153,15 @@ public class UnitopMQProducer {
      * ****************************** 【同步发送】 *********************************
      */
 
-    public void send(String topic, MessageData msg) throws MqBusinessException, MqWrapperException {
+    public void send(String topic, MessageData msg) throws MqBusinessException {
         send(topic, "", "", msg, null);
     }
 
-    public void send(String topic, String tags, MessageData msg) throws MqBusinessException, MqWrapperException {
+    public void send(String topic, String tags, MessageData msg) throws MqBusinessException {
         send(topic, tags, "", msg, null);
     }
 
-    public void send(String topic, String tags, String keys, MessageData msg)
-            throws MqBusinessException, MqWrapperException {
+    public void send(String topic, String tags, String keys, MessageData msg) throws MqBusinessException {
         send(topic, tags, keys, msg, null);
     }
 
@@ -163,13 +169,11 @@ public class UnitopMQProducer {
      * ****************************** 【异步发送】 **********************************
      */
 
-    public void send(String topic, MessageData msg, SendCallback callback)
-            throws MqBusinessException, MqWrapperException {
+    public void send(String topic, MessageData msg, SendCallback callback) throws MqBusinessException {
         send(topic, "", "", msg, callback);
     }
 
-    public void send(String topic, String tags, MessageData msg, SendCallback callback)
-            throws MqBusinessException, MqWrapperException {
+    public void send(String topic, String tags, MessageData msg, SendCallback callback) throws MqBusinessException {
         send(topic, tags, "", msg, callback);
     }
 
@@ -182,14 +186,13 @@ public class UnitopMQProducer {
      * @param msg      消息内容
      * @param callback 回调函数（异步：须填写）
      * @throws MqBusinessException
-     * @throws MqWrapperException
      */
     public void send(String topic, String tags, String keys, MessageData msg, SendCallback callback)
-            throws MqBusinessException, MqWrapperException {
-        CustomMessageConfig config = new CustomMessageConfig(topic, tags, keys, msg);
+            throws MqBusinessException {
+        ProducerBuildConfig config = new ProducerBuildConfig(topic, tags, keys, msg);
         // 回调函数不为空，则发送模式设置为异步
         if (Objects.nonNull(callback)) {
-            config.setSendMode(ProducerSendModeEnum.ASYNC);
+            config.setSendMode(ProducerTransferEnum.ASYNC);
         }
         // 校验消息合法
         checkConfig(config);

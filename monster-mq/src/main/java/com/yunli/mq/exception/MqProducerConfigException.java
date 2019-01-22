@@ -1,7 +1,7 @@
-package com.unitop.mq.exception;
+package com.yunli.mq.exception;
 
 /**
- * 自定义配置文件异常
+ * 生产者配置文件异常
  *
  * @author zhouchao
  * @date 2019-01-16 17:09

@@ -1,24 +1,24 @@
-package com.unitop.mq.producer.config;
+package com.yunli.mq.producer.config;
 
 
-import com.unitop.mq.common.MessageData;
-import com.unitop.mq.producer.enums.MessageDelayLevelEnum;
-import com.unitop.mq.producer.enums.ProducerSendModeEnum;
+import com.yunli.mq.common.MessageData;
+import com.yunli.mq.producer.enums.MessageDelayLevelEnum;
+import com.yunli.mq.producer.enums.ProducerTransferEnum;
 import org.apache.rocketmq.client.producer.SendCallback;
 import org.apache.rocketmq.remoting.common.RemotingHelper;
 
 /**
- * 自定义mq消息配置
+ * 生产者自定义mq消息配置
  *
  * @author zc151
  * @date 2019-01-16 21:52
  */
-public class CustomMessageConfig {
+public class ProducerBuildConfig {
 
     /**
      * 发送模式 同步、异步、one-way
      */
-    private ProducerSendModeEnum  sendMode;
+    private ProducerTransferEnum  sendMode;
     /**
      * topic 主题
      */
@@ -52,31 +52,31 @@ public class CustomMessageConfig {
      */
     private MessageDelayLevelEnum delayLevel;
 
-    public CustomMessageConfig(String topic, MessageData message) {
+    public ProducerBuildConfig(String topic, MessageData message) {
         this(topic, "", "", message);
     }
 
-    public CustomMessageConfig(String topic, String tags, MessageData message) {
+    public ProducerBuildConfig(String topic, String tags, MessageData message) {
         this(topic, tags, "", message);
     }
 
-    public CustomMessageConfig(String topic, String tags, String keys, MessageData message) {
+    public ProducerBuildConfig(String topic, String tags, String keys, MessageData message) {
         this.topic = topic;
         this.tags = tags;
         this.keys = keys;
         this.message = message;
-        this.sendMode = ProducerSendModeEnum.SYNC;
+        this.sendMode = ProducerTransferEnum.SYNC;
         this.charSet = RemotingHelper.DEFAULT_CHARSET;
         this.callback = null;
         this.sort = null;
         this.delayLevel = null;
     }
 
-    public ProducerSendModeEnum getSendMode() {
+    public ProducerTransferEnum getSendMode() {
         return sendMode;
     }
 
-    public void setSendMode(ProducerSendModeEnum sendMode) {
+    public void setSendMode(ProducerTransferEnum sendMode) {
         this.sendMode = sendMode;
     }
 

@@ -1,10 +1,10 @@
-package com.unitop.mq.exception;
+package com.yunli.mq.exception;
 
 /**
- * MQ业务异常:RokectMq异常全在这个异常
+ * RocketMq使用异常，自定义异常
  *
  * @author zc151
- * @date 2019-01-16 21:52
+ * @date 2019-01-16 22:37
  */
 public class MqBusinessException extends Exception {
 

@@ -2,13 +2,14 @@ package com.yunli.mq.producer.enums;
 
 import com.alibaba.fastjson.JSON;
 import com.yunli.mq.exception.MqBusinessException;
-import com.yunli.mq.exception.MqWrapperException;
-import com.yunli.mq.producer.config.CustomMessageConfig;
+import com.yunli.mq.producer.config.ProducerBuildConfig;
 import com.yunli.mq.producer.config.StandardMessageQueueSelector;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.client.producer.SendStatus;
 import org.apache.rocketmq.common.message.Message;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 
@@ -18,36 +19,43 @@ import java.util.Objects;
  * @author zc151
  * @date 2019-01-16 21:52
  */
-public enum ProducerSendModeEnum {
+public enum ProducerTransferEnum {
+
     /**
      * 同步模式
      */
     SYNC {
         @Override
-        protected void sendMsg(DefaultMQProducer producer, Message message, CustomMessageConfig config)
-                throws MqWrapperException {
+        protected void sendMsg(DefaultMQProducer producer, Message message, ProducerBuildConfig config)
+                throws MqBusinessException {
+            final Logger logger = LoggerFactory.getLogger(ProducerTransferEnum.class);
             try {
                 SendResult sendResult = producer.send(message);
                 SendStatus sendStatus = sendResult.getSendStatus();
                 if (!Objects.equals(sendStatus, SendStatus.SEND_OK)) {
-                    throw new MqBusinessException("消息发送异常. 返回：sendStatus:" + sendStatus.name());
+                    logger.info("sendResult advice：{}", sendResult);
+                } else {
+                    logger.debug("sendResult advice：{}", sendResult);
                 }
             } catch (Exception e) {
-                throw new MqWrapperException(e);
+                throw new MqBusinessException(e);
             }
         }
 
         @Override
-        protected void sendOrderlyMsg(DefaultMQProducer producer, Message message, CustomMessageConfig config)
-                throws MqWrapperException {
+        protected void sendOrderlyMsg(DefaultMQProducer producer, Message message, ProducerBuildConfig config)
+                throws MqBusinessException {
+            final Logger logger = LoggerFactory.getLogger(ProducerTransferEnum.class);
             try {
                 SendResult sendResult = producer.send(message, new StandardMessageQueueSelector(), config.getSort());
                 SendStatus sendStatus = sendResult.getSendStatus();
                 if (!Objects.equals(sendStatus, SendStatus.SEND_OK)) {
-                    throw new MqBusinessException("消息发送异常. 返回：sendStatus:" + sendStatus.name());
+                    logger.info("sendResult advice：{}", sendResult);
+                } else {
+                    logger.debug("sendResult advice：{}", sendResult);
                 }
             } catch (Exception e) {
-                throw new MqWrapperException(e);
+                throw new MqBusinessException(e);
             }
         }
     },
@@ -57,31 +65,31 @@ public enum ProducerSendModeEnum {
      */
     ASYNC {
         @Override
-        public void sendMsg(DefaultMQProducer producer, CustomMessageConfig config)
-                throws MqWrapperException, MqBusinessException {
+        public void sendMsg(DefaultMQProducer producer, ProducerBuildConfig config) throws MqBusinessException {
             if (Objects.isNull(config.getCallback())) {
-                throw new MqBusinessException("异步模式必须添加回调函数. 请设置CustomMessageConfig.SendCallback属性");
+                throw new MqBusinessException(
+                        "async mode must set callback. Please set CustomMessageConfig.SendCallback");
             }
             super.sendMsg(producer, config);
         }
 
         @Override
-        protected void sendMsg(DefaultMQProducer producer, Message message, CustomMessageConfig config)
-                throws MqWrapperException {
+        protected void sendMsg(DefaultMQProducer producer, Message message, ProducerBuildConfig config)
+                throws MqBusinessException {
             try {
                 producer.send(message, config.getCallback());
             } catch (Exception e) {
-                throw new MqWrapperException(e);
+                throw new MqBusinessException(e);
             }
         }
 
         @Override
-        protected void sendOrderlyMsg(DefaultMQProducer producer, Message message, CustomMessageConfig config)
-                throws MqWrapperException {
+        protected void sendOrderlyMsg(DefaultMQProducer producer, Message message, ProducerBuildConfig config)
+                throws MqBusinessException {
             try {
                 producer.send(message, new StandardMessageQueueSelector(), config.getSort(), config.getCallback());
             } catch (Exception e) {
-                throw new MqWrapperException(e);
+                throw new MqBusinessException(e);
             }
         }
     },
@@ -91,27 +99,27 @@ public enum ProducerSendModeEnum {
      */
     ONEWAY {
         @Override
-        protected void sendMsg(DefaultMQProducer producer, Message message, CustomMessageConfig config)
-                throws MqWrapperException {
+        protected void sendMsg(DefaultMQProducer producer, Message message, ProducerBuildConfig config)
+                throws MqBusinessException {
             try {
                 producer.sendOneway(message);
             } catch (Exception e) {
-                throw new MqWrapperException(e);
+                throw new MqBusinessException(e);
             }
         }
 
         @Override
-        protected void sendOrderlyMsg(DefaultMQProducer producer, Message message, CustomMessageConfig config)
-                throws MqWrapperException {
+        protected void sendOrderlyMsg(DefaultMQProducer producer, Message message, ProducerBuildConfig config)
+                throws MqBusinessException {
             try {
                 producer.sendOneway(message, new StandardMessageQueueSelector(), config.getSort());
             } catch (Exception e) {
-                throw new MqWrapperException(e);
+                throw new MqBusinessException(e);
             }
         }
     };
 
-    ProducerSendModeEnum() {
+    ProducerTransferEnum() {
 
     }
 
@@ -121,10 +129,10 @@ public enum ProducerSendModeEnum {
      * @param producer
      * @param message
      * @param config
-     * @throws MqWrapperException
+     * @throws MqBusinessException
      */
-    protected abstract void sendMsg(DefaultMQProducer producer, Message message, CustomMessageConfig config)
-            throws MqWrapperException;
+    protected abstract void sendMsg(DefaultMQProducer producer, Message message, ProducerBuildConfig config)
+            throws MqBusinessException;
 
     /**
      * 顺序消息
@@ -132,19 +140,19 @@ public enum ProducerSendModeEnum {
      * @param producer
      * @param message
      * @param config
-     * @throws MqWrapperException
+     * @throws MqBusinessException
      */
-    protected abstract void sendOrderlyMsg(DefaultMQProducer producer, Message message, CustomMessageConfig config)
-            throws MqWrapperException;
+    protected abstract void sendOrderlyMsg(DefaultMQProducer producer, Message message, ProducerBuildConfig config)
+            throws MqBusinessException;
 
     /**
      * 格式化消息为RocketMQ消息样式
      *
      * @param config
      * @return
-     * @throws MqWrapperException
+     * @throws MqBusinessException
      */
-    private static Message formatMessage(CustomMessageConfig config) throws MqWrapperException {
+    private static Message formatMessage(ProducerBuildConfig config) throws MqBusinessException {
         try {
             byte[] body = JSON.toJSONString(config.getMessage()).getBytes(config.getCharSet());
             Message message = new Message(config.getTopic(), config.getTags(), config.getKeys(), body);
@@ -153,7 +161,7 @@ public enum ProducerSendModeEnum {
             }
             return message;
         } catch (Exception e) {
-            throw new MqWrapperException(e);
+            throw new MqBusinessException(e);
         }
 
     }
@@ -163,14 +171,12 @@ public enum ProducerSendModeEnum {
      *
      * @param producer 生产者实例
      * @param config   消息包装
-     * @throws MqWrapperException
      * @throws MqBusinessException
      */
-    public void sendMsg(DefaultMQProducer producer, CustomMessageConfig config)
-            throws MqWrapperException, MqBusinessException {
-        Message message = ProducerSendModeEnum.formatMessage(config);
+    public void sendMsg(DefaultMQProducer producer, ProducerBuildConfig config) throws MqBusinessException {
+        Message message = ProducerTransferEnum.formatMessage(config);
         if (!Objects.isNull(message)) {
-            // 判断消息发送方式
+            // 判断消息类型：无序、有序
             if (Objects.isNull(config.getSort())) {
                 this.sendMsg(producer, message, config);
                 return;
