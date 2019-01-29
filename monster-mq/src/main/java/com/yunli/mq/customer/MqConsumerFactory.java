@@ -26,7 +26,7 @@ public class MqConsumerFactory {
     /**
      * 消费者实例对象集合
      */
-    private static       Map<String, FastMQPushConsumer> consumers  = new ConcurrentHashMap<>();
+    private static       Map<String, FastMqPushConsumer> consumers  = new ConcurrentHashMap<>();
     private static       Properties                        properties = PropertiesUtil.getConsumerProperties();
     private static       MqConsumerFactory                 factory;
 
@@ -80,7 +80,7 @@ public class MqConsumerFactory {
             throw new MqConsumerConfigException(
                     "mq build consumer error,properties nameServer or topic or listener is null.");
         }
-        consumers.put(prefix, new FastMQPushConsumer(getBuildConfig(prefix)));
+        consumers.put(prefix, new FastMqPushConsumer(getBuildConfig(prefix)));
     }
 
     /**
@@ -194,7 +194,7 @@ public class MqConsumerFactory {
      * @param prefix
      * @return
      */
-    public FastMQPushConsumer getConsumer(String prefix) {
+    public FastMqPushConsumer getConsumer(String prefix) {
         return consumers.get(prefix);
     }
 }
