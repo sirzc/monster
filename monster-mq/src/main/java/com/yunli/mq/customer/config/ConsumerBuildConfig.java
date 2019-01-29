@@ -12,46 +12,22 @@ import java.util.Map;
  * @date 2019-01-18 16:02
  */
 public class ConsumerBuildConfig {
+
     /**
      * 同一个group中的 topic - List<>topic class</>
      */
     private Map<String, List<IMqHandler>> topicHandler;
-    /**
-     * 分组 名称
-     */
+    private String                        nameServer;
     private String                        groupName;
-    /**
-     * 分组，消息按组进行消费
-     */
-    private String                        group;
-    /**
-     * 消费子表达式
-     */
-    private String                        subExpression;
-    /**
-     * 是否顺序
-     */
-    private boolean                       isOrderly;
-    /**
-     * 是否广播
-     */
-    private boolean                       isBroadcast;
-    /**
-     * 最小消费者线程数
-     */
-    private int                           consumerThreadCountMin;
-    /**
-     * 最大消费者线程数
-     */
-    private int                           consumerThreadCountMax;
-    /**
-     * 批量消息最大大小
-     */
-    private int                           consumeMessageBatchMaxSize;
-    /**
-     * 引用配置文件前缀（切换配置）
-     */
-    private String                        prefix;
+    private String                        topic;
+    private String                        subExpression              = "*";
+    private String                        instanceName;
+    private long                          consumeTimeout             = 15;
+    private int                           consumeMessageBatchMaxSize = 1;
+    private int                           ThreadCountMin             = 20;
+    private int                           ThreadCountMax             = 64;
+    private boolean                       isBroadcast                = false;
+    private boolean                       isOrderly                  = false;
 
     public Map<String, List<IMqHandler>> getTopicHandler() {
         return topicHandler;
@@ -59,6 +35,14 @@ public class ConsumerBuildConfig {
 
     public void setTopicHandler(Map<String, List<IMqHandler>> topicHandler) {
         this.topicHandler = topicHandler;
+    }
+
+    public String getNameServer() {
+        return nameServer;
+    }
+
+    public void setNameServer(String nameServer) {
+        this.nameServer = nameServer;
     }
 
     public String getGroupName() {
@@ -69,12 +53,12 @@ public class ConsumerBuildConfig {
         this.groupName = groupName;
     }
 
-    public String getGroup() {
-        return group;
+    public String getTopic() {
+        return topic;
     }
 
-    public void setGroup(String group) {
-        this.group = group;
+    public void setTopic(String topic) {
+        this.topic = topic;
     }
 
     public String getSubExpression() {
@@ -85,36 +69,20 @@ public class ConsumerBuildConfig {
         this.subExpression = subExpression;
     }
 
-    public boolean isOrderly() {
-        return isOrderly;
+    public String getInstanceName() {
+        return instanceName;
     }
 
-    public void setOrderly(boolean orderly) {
-        isOrderly = orderly;
+    public void setInstanceName(String instanceName) {
+        this.instanceName = instanceName;
     }
 
-    public boolean isBroadcast() {
-        return isBroadcast;
+    public long getConsumeTimeout() {
+        return consumeTimeout;
     }
 
-    public void setBroadcast(boolean broadcast) {
-        isBroadcast = broadcast;
-    }
-
-    public int getConsumerThreadCountMin() {
-        return consumerThreadCountMin;
-    }
-
-    public void setConsumerThreadCountMin(int consumerThreadCountMin) {
-        this.consumerThreadCountMin = consumerThreadCountMin;
-    }
-
-    public int getConsumerThreadCountMax() {
-        return consumerThreadCountMax;
-    }
-
-    public void setConsumerThreadCountMax(int consumerThreadCountMax) {
-        this.consumerThreadCountMax = consumerThreadCountMax;
+    public void setConsumeTimeout(long consumeTimeout) {
+        this.consumeTimeout = consumeTimeout;
     }
 
     public int getConsumeMessageBatchMaxSize() {
@@ -125,20 +93,45 @@ public class ConsumerBuildConfig {
         this.consumeMessageBatchMaxSize = consumeMessageBatchMaxSize;
     }
 
-    public String getPrefix() {
-        return prefix;
+    public int getThreadCountMin() {
+        return ThreadCountMin;
     }
 
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
+    public void setThreadCountMin(int threadCountMin) {
+        ThreadCountMin = threadCountMin;
+    }
+
+    public int getThreadCountMax() {
+        return ThreadCountMax;
+    }
+
+    public void setThreadCountMax(int threadCountMax) {
+        ThreadCountMax = threadCountMax;
+    }
+
+    public boolean isBroadcast() {
+        return isBroadcast;
+    }
+
+    public void setBroadcast(boolean broadcast) {
+        isBroadcast = broadcast;
+    }
+
+    public boolean isOrderly() {
+        return isOrderly;
+    }
+
+    public void setOrderly(boolean orderly) {
+        isOrderly = orderly;
     }
 
     @Override
     public String toString() {
-        return "ConsumerBuildConfig{" + "topicHandler=" + topicHandler + ", groupName='" + groupName + '\''
-                + ", group='" + group + '\'' + ", subExpression='" + subExpression + '\'' + ", isOrderly=" + isOrderly
-                + ", isBroadcast=" + isBroadcast + ", consumerThreadCountMin=" + consumerThreadCountMin
-                + ", consumerThreadCountMax=" + consumerThreadCountMax + ", consumeMessageBatchMaxSize="
-                + consumeMessageBatchMaxSize + ", prefix='" + prefix + '\'' + '}';
+        return "ConsumerBuildConfig{" + "topicHandler='" + topicHandler + '\'' + ", nameServer='" + nameServer + '\''
+                + ", groupName='" + groupName + '\'' + ", topic='" + topic + '\'' + ", subExpression='" + subExpression
+                + '\'' + ", instanceName='" + instanceName + '\'' + ", consumeTimeout=" + consumeTimeout
+                + ", consumeMessageBatchMaxSize=" + consumeMessageBatchMaxSize + ", ThreadCountMin=" + ThreadCountMin
+                + ", ThreadCountMax=" + ThreadCountMax + ", isBroadcast=" + isBroadcast + ", isOrderly=" + isOrderly
+                + '}';
     }
 }

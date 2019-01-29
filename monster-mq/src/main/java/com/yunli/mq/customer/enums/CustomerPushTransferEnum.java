@@ -66,13 +66,11 @@ public enum CustomerPushTransferEnum {
 
     };
 
-    private CustomerPushTransferEnum() {
+    CustomerPushTransferEnum() {
 
     }
 
-    public void registerHandlers(DefaultMQPushConsumer consumer, Map<String, List<IMqHandler>> topicHandlers) {
-
-    }
+    public abstract void registerHandlers(DefaultMQPushConsumer consumer, Map<String, List<IMqHandler>> topicHandlers);
 
     private static boolean StandarddealMessage(Map<String, List<IMqHandler>> topicHandlers, List<MessageExt> msgs,
                                                final Logger logger) {
