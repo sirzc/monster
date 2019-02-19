@@ -17,10 +17,12 @@ import java.net.URL;
  */
 public class JsoupTest {
 
-    // 将网络文件保存为本地文件的方法
-    // @param destUrl
-    // @param fileName
-    // @throws IOException
+    /**
+     * 将网络文件保存为本地文件的方法
+     * @param destUrl 文件下载地址
+     * @param fileName 文件名称
+     * @throws IOException
+     */
     public static void saveToFile(String destUrl, String fileName) throws IOException {
         byte[] buf = new byte[4096];
         int size = 0;
@@ -43,7 +45,7 @@ public class JsoupTest {
         httpconn.disconnect();
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void music() throws IOException {
         String root = "F:\\mp3\\";
         //获取整个网站的根节点，也就是html开头部分一直到结束
         Document document = Jsoup.connect("https://d.05.tn/车载音频/A（音乐）2018热歌新歌排行榜/").get();
@@ -55,6 +57,13 @@ public class JsoupTest {
             break;
         }
     }
+
+    public static void main(String[] args) throws IOException {
+        String url = "http://img.bigdatabugs.com/JAVA web模式设计之道@www.bigDataBugs.com.pdf";
+        String root = "F:\\pdf\\JAVA web模式设计之道.pdf";
+        saveToFile(url,root);
+    }
+
 }
 
 
