@@ -43,7 +43,7 @@
         <fastjson.version>1.2.47</fastjson.version>
 
         <guava.version>19.0-rc1</guava.version>
-        <spring.version>4.3.20.RELEASE</spring.version>
+        <!--<spring.version>4.3.20.RELEASE</spring.version>-->
     </properties>
 
     <!-- 对子模块依赖进行管理 -->
@@ -149,12 +149,6 @@
                 <groupId>com.alibaba</groupId>
                 <artifactId>fastjson</artifactId>
                 <version>${fastjson.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-core</artifactId>
-                <version>${spring.version}</version>
             </dependency>
             <!-- unitop-mq-core中使用 -->
             <dependency>
