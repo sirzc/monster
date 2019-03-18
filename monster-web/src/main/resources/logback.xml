@@ -16,7 +16,7 @@
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <!-- %highlight:天蓝 %boldMagenta：突出 %cyan 绿 -->
-            <pattern>%d{yyyy-MM-dd HH:mm:ss} %yellow(%-5level)[%thread] %cyan(%-50.50logger{50})[%4.4L]: %msg%n
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %yellow([%5level]) %cyan(%-60.60logger{60})[%4.4L]: %msg%n
             </pattern>
         </encoder>
     </appender>

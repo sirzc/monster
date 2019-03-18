@@ -1,5 +1,6 @@
 package com.yunli.monster;
 
+import com.unitop.mq.customer.MqConsumerManager;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -14,5 +15,6 @@ public class MonsterApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(MonsterApplication.class, args);
+        MqConsumerManager.init();
     }
 }

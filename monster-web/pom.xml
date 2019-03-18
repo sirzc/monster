@@ -70,6 +70,10 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.unitop</groupId>
+            <artifactId>unitop-mq-core</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

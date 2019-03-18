@@ -41,7 +41,7 @@ mybatis-plus:
 ---
 spring:
   profiles:
-    active: test,mq
+    active: test,com.yunli.mq.mq
   datasource:
     url: jdbc:mysql://localhost:3306/unitop-job?useUnicode=true&characterEncoding=UTF-8
     username: root
