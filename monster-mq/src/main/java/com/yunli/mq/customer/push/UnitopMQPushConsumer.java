@@ -1,29 +1,29 @@
-package com.yunli.mq.customer;
+package com.yunli.mq.customer.push;
 
 import com.yunli.mq.customer.config.ConsumerBuildConfig;
-import com.yunli.mq.customer.enums.CustomerPushTransferEnum;
 import com.yunli.mq.exception.MqConsumerConfigException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.exception.MQClientException;
+import org.apache.rocketmq.common.consumer.ConsumeFromWhere;
 import org.apache.rocketmq.common.protocol.heartbeat.MessageModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
 /**
- * unitop-mq push消费者
+ * unitop-com.yunli.mq.mq push消费者
  *
  * @author zhouchao
  * @date 2019-01-18 15:09
  */
-public class FastMqPushConsumer {
-    private static final Logger logger = LoggerFactory.getLogger(FastMqPushConsumer.class);
+public class UnitopMQPushConsumer {
+    private static final Logger logger = LoggerFactory.getLogger(UnitopMQPushConsumer.class);
 
     private ConsumerBuildConfig config;
 
     private DefaultMQPushConsumer consumer;
 
-    public FastMqPushConsumer(ConsumerBuildConfig config) {
+    public UnitopMQPushConsumer(ConsumerBuildConfig config) {
         this.config = config;
         init();
     }
@@ -33,7 +33,7 @@ public class FastMqPushConsumer {
      */
     private void init() {
         if (null == config) {
-            throw new MqConsumerConfigException("mq init error,build config is null");
+            throw new MqConsumerConfigException("com.yunli.mq.mq init error,build config is null");
         }
         try {
             // 创建消费者实体
@@ -47,9 +47,9 @@ public class FastMqPushConsumer {
             consumer.setConsumeMessageBatchMaxSize(config.getConsumeMessageBatchMaxSize());
             consumer.setConsumeThreadMin(config.getThreadCountMin());
             consumer.setConsumeThreadMax(config.getThreadCountMax());
-            logger.info("mq init {},Rocket MQ:DefaultMQPushConsumer use config:{}", config.getGroupName(), config);
+            logger.info("com.yunli.mq.mq init {},Rocket MQ:DefaultMQPushConsumer use config:{}", config.getGroupName(), config);
         } catch (MQClientException e) {
-            String warn = "mq init" + config.getGroupName() + " error, use config:" + config;
+            String warn = "com.yunli.mq.mq init" + config.getGroupName() + " error, use config:" + config;
             logger.error(warn, e);
             throw new MqConsumerConfigException(warn, e);
         }
@@ -60,9 +60,10 @@ public class FastMqPushConsumer {
      */
     public void run() throws MQClientException {
         if (null == config.getTopicHandler() || config.getTopicHandler().size() == 0) {
-            throw new MqConsumerConfigException("mq consumer config topic listener is null");
+            throw new MqConsumerConfigException("com.yunli.mq.mq consumer config topic listener is null");
         }
         if (config.isBroadcast()) {
+            consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET);
             consumer.setMessageModel(MessageModel.BROADCASTING);
         }
         // 是否为顺序模式，注册处理程序
@@ -72,7 +73,7 @@ public class FastMqPushConsumer {
             CustomerPushTransferEnum.PUSH_DISORDER.registerHandlers(consumer, config.getTopicHandler());
         }
         start();
-        logger.info("mq start consumer use config:{}", config.getGroupName());
+        logger.info("com.yunli.mq.mq start push consumer use config:{}", config.getGroupName());
     }
 
     /**

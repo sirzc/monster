@@ -58,7 +58,7 @@ public class MqProducerFactory {
      * @param prefix 配置属性的前缀
      */
     private static void init(String prefix) {
-        logger.info(">>>>>>>>>>>>> mq producer load:{} properties", prefix);
+        logger.info(">>>>>>>>>>>>> com.yunli.mq.mq producer load:{} properties", prefix);
         producers.put(prefix, new FastMqProducer(prefix));
     }
 

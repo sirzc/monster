@@ -1,8 +1,7 @@
-package com.yunli.mq.customer.enums;
+package com.yunli.mq.customer.push;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
-import com.google.common.collect.Lists;
 import com.yunli.mq.common.MessageData;
 import com.yunli.mq.customer.handler.IMqHandler;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
@@ -15,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -35,7 +35,7 @@ public enum CustomerPushTransferEnum {
         public void registerHandlers(DefaultMQPushConsumer consumer, Map<String, List<IMqHandler>> topicHandlers) {
             final Logger logger = LoggerFactory.getLogger(CustomerPushTransferEnum.class);
             MessageListenerConcurrently listener = (msgs, context) -> {
-                boolean ok = StandarddealMessage(topicHandlers, msgs, logger);
+                boolean ok = standardDealMessage(topicHandlers, msgs, logger);
                 if (ok) {
                     return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
                 } else {
@@ -54,7 +54,7 @@ public enum CustomerPushTransferEnum {
         public void registerHandlers(DefaultMQPushConsumer consumer, Map<String, List<IMqHandler>> topicHandlers) {
             final Logger logger = LoggerFactory.getLogger(CustomerPushTransferEnum.class);
             MessageListenerOrderly listener = (msgs, context) -> {
-                boolean ok = StandarddealMessage(topicHandlers, msgs, logger);
+                boolean ok = standardDealMessage(topicHandlers, msgs, logger);
                 if (ok) {
                     return ConsumeOrderlyStatus.SUCCESS;
                 } else {
@@ -72,7 +72,7 @@ public enum CustomerPushTransferEnum {
 
     public abstract void registerHandlers(DefaultMQPushConsumer consumer, Map<String, List<IMqHandler>> topicHandlers);
 
-    private static boolean StandarddealMessage(Map<String, List<IMqHandler>> topicHandlers, List<MessageExt> msgs,
+    private static boolean standardDealMessage(Map<String, List<IMqHandler>> topicHandlers, List<MessageExt> msgs,
                                                final Logger logger) {
         boolean ok = true;
         // 该map的key为topic，value为该topic下的所有message
@@ -80,7 +80,7 @@ public enum CustomerPushTransferEnum {
 
         for (Map.Entry<String, List<MessageExt>> entry : topicMessage.entrySet()) {
             String topic = entry.getKey();
-            List<MessageData> messages = Lists.newArrayList();
+            List<MessageData> messages =  new ArrayList();
             for (MessageExt messageExt : entry.getValue()) {
                 String message = new String(messageExt.getBody(), StandardCharsets.UTF_8);
                 MessageData messageData = JSON.parseObject(message, new TypeReference<MessageData>() {});
@@ -91,7 +91,7 @@ public enum CustomerPushTransferEnum {
                 try {
                     handler.handle(messages);
                 } catch (Exception e) {
-                    logger.error("unitop mq error,topic:{},handler:{},messageSize:{},messages:{}", topic,
+                    logger.error("unitop com.yunli.mq.mq error,topic:{},handler:{},messageSize:{},messages:{}", topic,
                             handler.getClass().getName(), messages.size(), messages, e);
                     ok = false;
                 }

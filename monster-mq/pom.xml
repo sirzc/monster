@@ -7,9 +7,9 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>monster-mq</artifactId>
+    <artifactId>monster-com.yunli.mq.mq</artifactId>
     <packaging>jar</packaging>
-    <name>monster-mq</name>
+    <name>monster-com.yunli.mq.mq</name>
 
     <dependencies>
         <!-- rocket mq依赖 -->

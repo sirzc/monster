@@ -52,7 +52,7 @@ public class MqConstant {
     /**
      * 消费者实现接口
      */
-    public static final String CONSUMER_INTERFACE_CLASSNAME = "com.unitop.mq.customer.handler.IMqHandler";
+    public static final String CONSUMER_INTERFACE_CLASSNAME = "com.yunli.mq.customer.handler.IMqHandler";
 
     /**
      * 消费者：

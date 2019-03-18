@@ -6,13 +6,15 @@ import com.yunli.mq.common.PropertiesUtil;
 import com.yunli.mq.exception.MqBusinessException;
 import com.yunli.mq.exception.MqProducerConfigException;
 import com.yunli.mq.producer.config.ProducerBuildConfig;
-import com.yunli.mq.producer.enums.ProducerTransferEnum;
+import com.yunli.mq.producer.strategy.AsyncSend;
+import com.yunli.mq.producer.strategy.OneWaySend;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.apache.rocketmq.client.producer.SendCallback;
+import org.apache.rocketmq.client.producer.SendResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
 import java.util.Objects;
 import java.util.Properties;
@@ -44,8 +46,9 @@ public class FastMqProducer {
      * @param prefix 配置属性的前缀
      */
     private void init(String prefix) {
-        if (!checkVaild(prefix)) {
-            throw new MqProducerConfigException(">>>>>>>>>>>>> mq load " + prefix + " properties error.<<<<<<<<<<<<<");
+        if (!checkValid(prefix)) {
+            throw new MqProducerConfigException(
+                    ">>>>>>>>>>>>> com.yunli.mq.mq producer load " + prefix + " properties error.<<<<<<<<<<<<<");
         }
         // 创建Rocket MQ client 实例
         producer = new DefaultMQProducer(prop.getProperty(prefix + MqConstant.MQ_PRODUCER_GROUPNAME));
@@ -67,9 +70,9 @@ public class FastMqProducer {
         }
         try {
             producer.start();
-            logger.info(">>>>>>>>>>>>> mq producer start {} properties", prefix);
+            logger.info(">>>>>>>>>>>>> com.yunli.mq.mq producer start {} properties", prefix);
         } catch (MQClientException e) {
-            String warn = ">>>>>>>>>>>>> mq producer start " + prefix + " properties error.";
+            String warn = ">>>>>>>>>>>>> com.yunli.mq.mq producer start " + prefix + " properties error.";
             logger.warn(warn, e);
             throw new MqProducerConfigException(warn, e);
         }
@@ -88,7 +91,7 @@ public class FastMqProducer {
      * @param prefix
      * @return
      */
-    private boolean checkVaild(String prefix) {
+    private boolean checkValid(String prefix) {
         String nameserver = prop.getProperty(prefix + MqConstant.MQ_PRODUCER_NAMESERVER);
         if (StringUtils.isEmpty(nameserver)) {
             return false;
@@ -133,36 +136,19 @@ public class FastMqProducer {
     }
 
     /**
-     * 定制化发送
-     *
-     * @param config
-     * @throws MqBusinessException
-     */
-    public void sendMsg(ProducerBuildConfig config) throws MqBusinessException {
-        // 校验消息合法
-        checkConfig(config);
-        // 判断消息模式
-        if (Objects.nonNull(config.getCallback())) {
-            config.setSendMode(ProducerTransferEnum.ASYNC);
-        }
-        ProducerTransferEnum sendMode = config.getSendMode();
-        sendMode.sendMsg(producer, config);
-    }
-
-    /**
      * ****************************** 【同步发送】 *********************************
      */
 
-    public void send(String topic, MessageData msg) throws MqBusinessException {
-        send(topic, "", "", msg, null);
+    public SendResult send(String topic, MessageData msg) throws MqBusinessException {
+        return send(topic, "", "", msg, null);
     }
 
-    public void send(String topic, String tags, MessageData msg) throws MqBusinessException {
-        send(topic, tags, "", msg, null);
+    public SendResult send(String topic, String tags, MessageData msg) throws MqBusinessException {
+        return send(topic, tags, "", msg, null);
     }
 
-    public void send(String topic, String tags, String keys, MessageData msg) throws MqBusinessException {
-        send(topic, tags, keys, msg, null);
+    public SendResult send(String topic, String tags, String keys, MessageData msg) throws MqBusinessException {
+        return send(topic, tags, keys, msg, null);
     }
 
     /**
@@ -178,6 +164,28 @@ public class FastMqProducer {
     }
 
     /**
+     * ****************************** 【One-Way发送】 **********************************
+     */
+
+    public void sendOneWay(String topic, MessageData msg) throws MqBusinessException {
+        ProducerBuildConfig config = new ProducerBuildConfig(topic, "", "", msg);
+        config.setSendMode(new OneWaySend());
+        sendMsg(config);
+    }
+
+    public void sendOneWay(String topic, String tags, MessageData msg) throws MqBusinessException {
+        ProducerBuildConfig config = new ProducerBuildConfig(topic, tags, "", msg);
+        config.setSendMode(new OneWaySend());
+        sendMsg(config);
+    }
+
+    public void sendOneWay(String topic, String tags, String keys, MessageData msg) throws MqBusinessException {
+        ProducerBuildConfig config = new ProducerBuildConfig(topic, tags, keys, msg);
+        config.setSendMode(new OneWaySend());
+        sendMsg(config);
+    }
+
+    /**
      * 发送消息
      *
      * @param topic    主题
@@ -187,16 +195,26 @@ public class FastMqProducer {
      * @param callback 回调函数（异步：须填写）
      * @throws MqBusinessException
      */
-    public void send(String topic, String tags, String keys, MessageData msg, SendCallback callback)
+    public SendResult send(String topic, String tags, String keys, MessageData msg, SendCallback callback)
             throws MqBusinessException {
         ProducerBuildConfig config = new ProducerBuildConfig(topic, tags, keys, msg);
+        config.setCallback(callback);
+        return sendMsg(config);
+    }
+
+    /**
+     * 定制化发送
+     *
+     * @param config
+     * @throws MqBusinessException
+     */
+    public SendResult sendMsg(ProducerBuildConfig config) throws MqBusinessException {
         // 回调函数不为空，则发送模式设置为异步
-        if (Objects.nonNull(callback)) {
-            config.setSendMode(ProducerTransferEnum.ASYNC);
+        if (Objects.nonNull(config.getCallback())) {
+            config.setSendMode(new AsyncSend());
         }
         // 校验消息合法
         checkConfig(config);
-        // 发送消息
-        config.getSendMode().sendMsg(producer, config);
+        return config.getSendMode().sendMsg(producer, config);
     }
 }

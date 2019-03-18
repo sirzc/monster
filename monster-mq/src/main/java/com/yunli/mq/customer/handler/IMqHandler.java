@@ -13,8 +13,8 @@ import java.util.List;
 public interface IMqHandler {
     /**
      * 消息消费
-     * @param msg
+     * @param messages
      * @throws Exception
      */
-    void handle(List<MessageData> msg) throws Exception;
+    void handle(List<MessageData> messages) throws Exception;
 }

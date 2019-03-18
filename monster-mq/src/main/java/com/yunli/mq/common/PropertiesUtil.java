@@ -16,24 +16,6 @@ import java.util.Properties;
 public class PropertiesUtil {
 
     /**
-     * 获取消费者需要扫描的包路径
-     *
-     * @param prefix 配置属性的前缀
-     * @return
-     */
-//    public static String getScanPackages(String... prefix) {
-//        String scanPackages = MqConstant.CONSUMER_DEFAULT_SCAN_PACKAGE;
-//        Set<String> packages = Sets.newHashSet();
-//        for (String str : prefix) {
-//            packages.add(getConsumerProperties().getProperty(str + MqConstant.MQ_CONSUMER_SCAN_PACKAGE));
-//        }
-//        if (packages.size() > 0) {
-//            scanPackages = String.join(",", packages);
-//        }
-//        return scanPackages;
-//    }
-
-    /**
      * 获取生产者配置
      * @return producer properties
      */

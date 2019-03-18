@@ -1,9 +1,9 @@
 package com.yunli.mq.producer.config;
 
-
 import com.yunli.mq.common.MessageData;
 import com.yunli.mq.producer.enums.MessageDelayLevelEnum;
-import com.yunli.mq.producer.enums.ProducerTransferEnum;
+import com.yunli.mq.producer.strategy.AbstractSend;
+import com.yunli.mq.producer.strategy.SyncSend;
 import org.apache.rocketmq.client.producer.SendCallback;
 import org.apache.rocketmq.remoting.common.RemotingHelper;
 
@@ -18,7 +18,7 @@ public class ProducerBuildConfig {
     /**
      * 发送模式 同步、异步、one-way
      */
-    private ProducerTransferEnum  sendMode;
+    private AbstractSend          sendMode;
     /**
      * topic 主题
      */
@@ -65,18 +65,18 @@ public class ProducerBuildConfig {
         this.tags = tags;
         this.keys = keys;
         this.message = message;
-        this.sendMode = ProducerTransferEnum.SYNC;
+        this.sendMode = new SyncSend();
         this.charSet = RemotingHelper.DEFAULT_CHARSET;
         this.callback = null;
         this.sort = null;
         this.delayLevel = null;
     }
 
-    public ProducerTransferEnum getSendMode() {
+    public AbstractSend getSendMode() {
         return sendMode;
     }
 
-    public void setSendMode(ProducerTransferEnum sendMode) {
+    public void setSendMode(AbstractSend sendMode) {
         this.sendMode = sendMode;
     }
 

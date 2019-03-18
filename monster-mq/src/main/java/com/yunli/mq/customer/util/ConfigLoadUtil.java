@@ -1,64 +1,36 @@
-package com.yunli.mq.customer;
+package com.yunli.mq.customer.util;
 
-import com.google.common.collect.Lists;
 import com.yunli.mq.common.MqConstant;
 import com.yunli.mq.common.PropertiesUtil;
 import com.yunli.mq.customer.config.ConsumerBuildConfig;
 import com.yunli.mq.customer.handler.IMqHandler;
-import com.yunli.mq.exception.MqConsumerConfigException;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 消费者工厂类
+ * 消费者配置加载工具类
  *
  * @author zhouchao
- * @date 2019-01-18 16:24
+ * @date 2019-02-27 15:35
  */
-public class MqConsumerFactory {
+public class ConfigLoadUtil {
 
-    private static final Logger                            logger     =
-            LoggerFactory.getLogger(MqConsumerFactory.class);
-    /**
-     * 消费者实例对象集合
-     */
-    private static       Map<String, FastMqPushConsumer> consumers  = new ConcurrentHashMap<>();
-    private static       Properties                        properties = PropertiesUtil.getConsumerProperties();
-    private static       MqConsumerFactory                 factory;
+    private static final Logger logger = LoggerFactory.getLogger(ConfigLoadUtil.class);
 
-    private MqConsumerFactory() {
-        super();
-    }
-
-    /**
-     * 获取消费者工厂类
-     *
-     * @return
-     */
-    public static MqConsumerFactory getFactory() {
-        if (factory == null) {
-            synchronized (MqConsumerFactory.class) {
-                if (factory == null) {
-                    factory = new MqConsumerFactory();
-                }
-            }
-        }
-        return factory;
-    }
+    private static Properties properties = PropertiesUtil.getConsumerProperties();
 
     /**
      * 获取需要配置的
      *
      * @return
      */
-    public List<String> listPrefix() {
+    public static List<String> listPrefix() {
         String start = properties.getProperty(MqConstant.MQ_START_CONSUMER, MqConstant.DEFAULT_MQ_PREFIX);
         String[] configs = start.split(MqConstant.DEFAULT_MQ_SEPARATOR);
-        List<String> prefixList = Lists.newArrayList();
+        List<String> prefixList = new ArrayList();
         for (String prefix : configs) {
             if (!prefixList.contains(prefix)) {
                 prefixList.add(prefix);
@@ -68,28 +40,12 @@ public class MqConsumerFactory {
     }
 
     /**
-     * 构建消费者
+     * 检查常规配置有效性
      *
      * @param prefix
-     */
-    public void buildConsumer(String prefix) {
-        if (consumers.containsKey(prefix)) {
-            return;
-        }
-        if (!checkValid(prefix)) {
-            throw new MqConsumerConfigException(
-                    "mq build consumer error,properties nameServer or topic or listener is null.");
-        }
-        consumers.put(prefix, new FastMqPushConsumer(getBuildConfig(prefix)));
-    }
-
-    /**
-     * 校验配置有效性
-     *
-     * @param prefix 获取的配置
      * @return
      */
-    private boolean checkValid(String prefix) {
+    public static boolean checkCommon(String prefix) {
         // 校验服务是否配置
         if (StringUtils.isEmpty(properties.getProperty(prefix + MqConstant.MQ_CONSUMER_NAMESERVER))) {
             return false;
@@ -98,7 +54,17 @@ public class MqConsumerFactory {
         if (StringUtils.isEmpty(properties.getProperty(prefix + MqConstant.MQ_CONSUMER_SUBSCRIBE))) {
             return false;
         }
-        // 校验是否配置监听
+        return true;
+    }
+
+    /**
+     * 校验Push配置有效性
+     *
+     * @param prefix 获取的配置
+     * @return
+     */
+    public static boolean checkValid(String prefix) {
+        checkCommon(prefix);
         if (StringUtils.isEmpty(properties.getProperty(prefix + MqConstant.MQ_CONSUMER_LISTENER_HANDLER))) {
             return false;
         }
@@ -108,14 +74,15 @@ public class MqConsumerFactory {
     /**
      * 组装配置
      *
-     * @param prefix
+     * @param prefix 获取的配置
      * @return
      */
-    private ConsumerBuildConfig getBuildConfig(String prefix) {
+    public static ConsumerBuildConfig getBuildConfig(String prefix) {
         ConsumerBuildConfig config = new ConsumerBuildConfig();
         config.setNameServer(properties.getProperty(prefix + MqConstant.MQ_CONSUMER_NAMESERVER));
         config.setGroupName(prefix);
-        String[] subscribe = properties.getProperty(prefix + MqConstant.MQ_CONSUMER_SUBSCRIBE).split(MqConstant.DEFAULT_MQ_SEPARATOR);
+        String[] subscribe = properties.getProperty(prefix + MqConstant.MQ_CONSUMER_SUBSCRIBE)
+                .split(MqConstant.DEFAULT_MQ_SEPARATOR);
         config.setTopic(subscribe[0]);
         if (subscribe.length > 1) {
             config.setSubExpression(subscribe[1]);
@@ -140,7 +107,7 @@ public class MqConsumerFactory {
         if (!StringUtils.isEmpty(threadMax)) {
             config.setThreadCountMax(Integer.parseInt(threadMax));
         }
-        String isBroadcast =properties.getProperty(prefix + MqConstant.MQ_CONSUMER_BROADCAST);
+        String isBroadcast = properties.getProperty(prefix + MqConstant.MQ_CONSUMER_BROADCAST);
         if (!StringUtils.isEmpty(isBroadcast)) {
             config.setBroadcast(Boolean.parseBoolean(isBroadcast));
         }
@@ -148,20 +115,20 @@ public class MqConsumerFactory {
         if (!StringUtils.isEmpty(isOrderly)) {
             config.setOrderly(Boolean.parseBoolean(isOrderly));
         }
-        // 注册主题对应的监听器
-        String iHandler = properties.getProperty(prefix + MqConstant.MQ_CONSUMER_LISTENER_HANDLER);
-        config.setTopicHandler(registerTopicHandler(config.getTopic(), iHandler));
         return config;
     }
 
     /**
      * 注册topic处理器
      *
-     * @param topic
-     * @param iHandler
+     * @param topic 主题
+     * @param prefix 获取的配置
      * @return
      */
-    private Map<String, List<IMqHandler>> registerTopicHandler(String topic, String iHandler) {
+    public static Map<String, List<IMqHandler>> registerTopicHandler(String topic, String prefix) {
+        // 获取消息处理器
+        String iHandler = properties.getProperty(prefix + MqConstant.MQ_CONSUMER_LISTENER_HANDLER);
+        // 注册主题对应的监听器
         Map<String, List<IMqHandler>> topicHandler = new HashMap<>(5);
         List<IMqHandler> iMqHandlers = new ArrayList<>();
         String[] callbackAddress = iHandler.split(MqConstant.DEFAULT_MQ_SEPARATOR);
@@ -174,7 +141,7 @@ public class MqConsumerFactory {
                 // 检查当前类是否继承了 默认的接口
                 boolean rightStatus = Arrays.asList(cc.getInterfaces()).contains(interfaceClass);
                 if (!rightStatus) {
-                    logger.error("mq consumer register error. class:{} not implement {}", callbackName,
+                    logger.error("com.yunli.mq.mq consumer register error. class:{} not implement {}", callbackName,
                             MqConstant.CONSUMER_INTERFACE_CLASSNAME);
                     continue;
                 }
@@ -182,19 +149,10 @@ public class MqConsumerFactory {
                 IMqHandler mqHandler = (IMqHandler) cc.newInstance();
                 iMqHandlers.add(mqHandler);
             } catch (Exception e) {
-                logger.error("mq consumer register error. analysis class:{}", callbackName, e);
+                logger.error("com.yunli.mq.mq consumer register error. analysis class:{}", callbackName, e);
             }
         }
-        topicHandler.put(topic,iMqHandlers);
+        topicHandler.put(topic, iMqHandlers);
         return topicHandler;
-    }
-
-    /**
-     * 获取消费者
-     * @param prefix
-     * @return
-     */
-    public FastMqPushConsumer getConsumer(String prefix) {
-        return consumers.get(prefix);
     }
 }
